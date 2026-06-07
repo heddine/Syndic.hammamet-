@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#2347c8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Syndic Pro">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Syndic Pro — 27 Omar Zayane</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<style>
+:root{
+  --bg:#1a3eb8;--bg2:#0f2580;--card:rgba(255,255,255,0.1);--card2:rgba(255,255,255,0.18);
+  --border:rgba(255,255,255,0.18);--accent:#f0c040;--green:#4ade80;--red:#f87171;
+  --teal:#2dd4bf;--text:#fff;--sub:rgba(255,255,255,0.72);--muted:rgba(255,255,255,0.42);
+  --serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',sans-serif;
+  --navy:#0a1a6e;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+body{
+  background:linear-gradient(160deg,#2347c8 0%,#1535a0 40%,#0f2580 100%);
+  color:var(--text);padding-bottom:72px;
+}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(10,25,100,0.96);
+  backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.12);
+  display:flex;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));}
+.bnt{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 12px;
+  cursor:pointer;color:var(--muted);transition:color .2s;min-width:52px;}
+.bnt.on{color:var(--accent);}
+.bnt .bi{font-size:20px;line-height:1;}
+.bnt .bl{font-size:9px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+
+/* PAGES */
+.page{display:none;padding:16px;animation:fadeUp .22s ease;}
+.page.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* SUB-PAGES (detail views) */
+.subpage{display:none;position:fixed;inset:0;z-index:300;
+  background:linear-gradient(160deg,#2347c8 0%,#1535a0 40%,#0f2580 100%);
+  overflow-y:auto;padding-bottom:32px;animation:slideIn .25s ease;}
+.subpage.on{display:block;}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.back-btn{display:flex;align-items:center;gap:8px;padding:16px;font-size:13px;
+  font-weight:600;color:var(--sub);cursor:pointer;width:fit-content;}
+.back-btn:hover{color:var(--text);}
+
+/* HEADER */
+.page-header{text-align:center;padding:20px 16px 8px;}
+.page-header h1{font-family:var(--serif);font-size:22px;margin-bottom:4px;}
+.page-header p{font-size:11px;color:var(--sub);}
+
+/* CARDS */
+.card{background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:16px;padding:16px;margin-bottom:12px;}
+.card-title{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;
+  color:var(--muted);font-weight:600;margin-bottom:10px;}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.kpi{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);
+  border-radius:14px;padding:14px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi.kg::before{background:var(--green);}
+.kpi.kr::before{background:var(--red);}
+.kpi.ka::before{background:var(--accent);}
+.kpi.kb::before{background:var(--teal);}
+.kl{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:600;margin-bottom:5px;}
+.kv{font-family:var(--serif);font-size:18px;line-height:1.1;}
+.ks{font-size:10px;color:var(--sub);margin-top:3px;}
+.kpi.kg .kv{color:var(--green);}.kpi.kr .kv{color:var(--red);}.kpi.ka .kv{color:var(--accent);}.kpi.kb .kv{color:var(--teal);}
+
+/* SOLDE BANNER */
+.solde-banner{background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.07));
+  border:1px solid rgba(255,255,255,0.2);border-radius:16px;padding:20px;margin-bottom:12px;
+  display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;}
+.solde-banner::after{content:'';position:absolute;top:-20px;right:-20px;width:90px;height:90px;
+  background:radial-gradient(circle,rgba(240,192,64,0.15),transparent 70%);}
+.sb-val{font-family:var(--serif);font-size:28px;color:var(--accent);margin-top:4px;}
+.sb-label{font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);font-weight:600;}
+
+/* PROGRESS */
+.prog-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+.prog-bar{height:5px;background:rgba(255,255,255,0.1);border-radius:3px;margin:8px 0 4px;}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--accent));transition:width 1s ease;}
+.prog-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+
+/* CHART */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+.chart-wrap{height:150px;position:relative;}
+
+/* URGENCE */
+.urgence{background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.35);
+  border-left:3px solid var(--red);border-radius:10px;padding:11px 14px;margin-bottom:12px;
+  display:flex;gap:10px;align-items:flex-start;}
+
+/* LIST ITEMS */
+.list-item{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:12px;
+  padding:13px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background .15s;}
+.list-item:hover{background:var(--card2);}
+.li-left .li-name{font-size:13px;font-weight:500;}
+.li-left .li-sub{font-size:10px;color:var(--sub);margin-top:2px;}
+.li-right{text-align:right;flex-shrink:0;}
+.li-amt{font-family:var(--serif);font-size:15px;}
+.li-date{font-size:10px;color:var(--muted);margin-top:2px;}
+.arrow{color:var(--muted);font-size:14px;margin-left:8px;}
+
+/* BADGES */
+.badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.04em;}
+.b-ok{background:rgba(74,222,128,0.2);color:var(--green);}
+.b-par{background:rgba(240,192,64,0.2);color:var(--accent);}
+.b-nok{background:rgba(248,113,113,0.2);color:var(--red);}
+
+/* CAT PILLS */
+.cat{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;}
+.cn{background:rgba(45,212,191,0.15);color:var(--teal);}
+.ce{background:rgba(240,192,64,0.15);color:var(--accent);}
+.ct{background:rgba(96,165,250,0.15);color:#60a5fa;}
+.cr{background:rgba(248,113,113,0.15);color:var(--red);}
+.ca{background:rgba(255,255,255,0.1);color:var(--sub);}
+
+/* CHIPS */
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px;scrollbar-width:none;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{font-size:10px;font-weight:600;padding:5px 12px;border-radius:20px;
+  background:var(--card);border:1px solid var(--border);cursor:pointer;color:var(--sub);white-space:nowrap;}
+.chip.on{background:var(--accent);color:var(--navy);border-color:var(--accent);}
+
+/* BUTTONS */
+.btn{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:0.04em;
+  padding:10px 16px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;}
+.btn-gold{background:var(--accent);color:var(--navy);}
+.btn-ghost{background:rgba(255,255,255,0.08);color:var(--text);border:1px solid var(--border);}
+.btn-red{background:rgba(248,113,113,0.15);color:var(--red);border:1px solid rgba(248,113,113,0.3);}
+.btn-green{background:rgba(74,222,128,0.15);color:var(--green);border:1px solid rgba(74,222,128,0.3);}
+.btn-teal{background:rgba(45,212,191,0.15);color:var(--teal);border:1px solid rgba(45,212,191,0.3);}
+.btn-sm{padding:5px 10px;font-size:10px;border-radius:6px;}
+.btn-full{width:100%;padding:13px;font-size:12px;}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:8px;margin-bottom:12px;}
+
+/* SECTION HEAD */
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.sec-title{font-family:var(--serif);font-size:15px;}
+.sec-count{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:600;}
+.sc-r{background:rgba(248,113,113,0.15);color:var(--red);}
+.sc-g{background:rgba(74,222,128,0.15);color:var(--green);}
+
+/* COPRO CARD */
+.cc{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:14px;margin-bottom:8px;overflow:hidden;}
+.cc-top{padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.cc-name{font-family:var(--serif);font-size:13px;line-height:1.2;}
+.cc-meta{font-size:10px;color:var(--sub);margin-top:3px;}
+.cc-bar{height:3px;background:rgba(255,255,255,0.08);}
+.cc-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));transition:width .8s;}
+.cc-bot{padding:8px 14px;background:rgba(0,0,0,0.15);display:flex;justify-content:space-between;align-items:center;}
+
+/* CHARGE CARD */
+.chg{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.chg-motif{font-size:13px;font-weight:400;}
+.chg-meta{font-size:10px;color:var(--sub);margin-top:3px;display:flex;gap:6px;align-items:center;}
+.chg-amt{font-family:var(--serif);font-size:15px;color:var(--red);text-align:right;}
+.chg-date{font-size:10px;color:var(--muted);margin-top:2px;text-align:right;}
+
+/* FORMS */
+.fg{margin-bottom:12px;}
+.fl{display:block;font-size:9px;text-transform:uppercase;letter-spacing:0.12em;
+  color:var(--muted);font-weight:600;margin-bottom:5px;}
+.fi{width:100%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;padding:10px 12px;color:var(--text);font-family:var(--sans);font-size:13px;
+  outline:none;transition:border .2s;-webkit-appearance:none;}
+.fi:focus{border-color:var(--accent);}
+.fi option{background:#1535a0;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* MODALE */
+.overlay{display:none;position:fixed;inset:0;background:rgba(5,12,30,0.85);
+  z-index:500;align-items:flex-end;justify-content:center;}
+.overlay.on{display:flex;}
+.modal{background:rgba(20,50,160,0.97);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.18);border-top:1px solid rgba(240,192,64,0.25);
+  border-radius:18px 18px 0 0;padding:20px 16px 36px;width:100%;max-width:520px;
+  max-height:88vh;overflow-y:auto;animation:slideUp .22s ease;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.modal-title{font-family:var(--serif);font-size:17px;}
+.modal-x{background:rgba(255,255,255,0.08);border:1px solid var(--border);color:var(--sub);
+  width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;}
+
+/* PIN PAD */
+.pin-dots{display:flex;justify-content:center;gap:14px;margin:16px 0;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);transition:all .15s;}
+.pin-dot.filled{background:var(--accent);border-color:var(--accent);}
+.pin-dot.error{background:var(--red);border-color:var(--red);}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;}
+.pin-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
+  border-radius:14px;padding:18px;font-size:22px;font-weight:600;color:var(--text);cursor:pointer;
+  text-align:center;transition:all .1s;-webkit-tap-highlight-color:transparent;}
+.pin-btn:active{background:rgba(255,255,255,0.28);transform:scale(0.93);}
+.pin-msg{text-align:center;font-size:12px;min-height:18px;margin-bottom:4px;}
+.pin-msg.err{color:var(--red);}
+.pin-msg.ok{color:var(--green);}
+.pin-msg.info{color:var(--sub);}
+
+/* DETAIL COPRO */
+.det-header{padding:24px 16px 8px;text-align:center;}
+.det-avatar{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.12);
+  border:2px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin:0 auto 12px;}
+.det-name{font-family:var(--serif);font-size:20px;}
+.det-badge{display:inline-block;margin-top:6px;}
+
+/* RAPPORT */
+.rap-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:14px;margin-bottom:10px;}
+.rap-hd{font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);
+  font-weight:600;margin-bottom:10px;display:flex;justify-content:space-between;}
+.rap-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.rap-row:last-child{border-bottom:none;}
+.rap-lbl{font-size:12px;color:var(--sub);}
+.rap-val{font-size:12px;font-weight:500;}
+.rap-total{display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:4px;}
+.bilan-box{background:linear-gradient(135deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05));
+  border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;}
+.bb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:600;margin-bottom:4px;}
+.bb-val{font-family:var(--serif);font-size:15px;}
+
+/* PHOTOS GRID */
+.photos-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.photo-thumb{position:relative;width:72px;height:72px;}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border);}
+.photo-del{position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.65);color:#fff;
+  border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:10px;
+  display:flex;align-items:center;justify-content:center;}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;z-index:1000;
+  background:linear-gradient(160deg,#2347c8 0%,#1535a0 40%,#0f2580 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.login-screen.hidden{display:none;}
+.login-logo{width:80px;height:80px;border-radius:20px;background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;
+  font-size:36px;margin-bottom:20px;}
+.login-title{font-family:var(--serif);font-size:22px;color:#fff;text-align:center;margin-bottom:4px;}
+.login-sub{font-size:11px;color:rgba(255,255,255,0.6);text-align:center;margin-bottom:6px;}
+.login-status{display:flex;align-items:center;gap:5px;font-size:11px;color:#4ade80;margin-bottom:28px;}
+.login-box{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  border-radius:16px;padding:20px;width:100%;max-width:360px;margin-bottom:12px;}
+.login-box-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;}
+.login-box-sub{font-size:11px;color:rgba(255,255,255,0.55);margin-bottom:14px;}
+.consult-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);
+  border-radius:16px;padding:16px 20px;width:100%;max-width:360px;
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s;}
+.consult-btn:hover{background:rgba(255,255,255,0.12);}
+.login-footer{font-size:10px;color:rgba(255,255,255,0.3);margin-top:24px;text-align:center;}
+
+/* READONLY BANNER */
+.ro-banner{background:rgba(240,192,64,0.12);border-bottom:1px solid rgba(240,192,64,0.25);
+  padding:7px 16px;display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;color:var(--accent);font-weight:500;}
+
+/* TOAST */
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);
+  background:rgba(10,20,50,0.95);color:#fff;padding:10px 18px;border-radius:20px;
+  font-size:12px;z-index:9999;border:1px solid var(--border);backdrop-filter:blur(8px);
+  white-space:nowrap;pointer-events:none;transition:opacity .3s;}
+
+/* EMPTY */
+.empty{text-align:center;color:var(--muted);padding:28px;font-size:12px;}
+
+/* MA FICHE */
+.mf-avatar{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.1);
+  border:2px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto 12px;}
+
+/* READONLY MODE */
+/* ══ READONLY / CONSULT MODE ══ */
+body.readonly .toolbar{display:none!important;}
+/* body.readonly #cat-chips — chips kept visible for read-only filtering */
+body.readonly .bnt:nth-child(2){display:none!important;}
+body.readonly .chg{cursor:default;pointer-events:none;}
+body.readonly .chg .arrow{display:none;}
+body.readonly #db-impayes .list-item{cursor:default;pointer-events:none;}
+body.readonly #db-impayes .arrow{display:none;}
+body.readonly button.btn-gold:not(#msg-compose .btn-gold):not(.btn-recu){display:none!important;}
+body.readonly button.btn-red{display:none!important;}
+body.readonly button.btn-teal:not(.btn-recu){display:none!important;}
+body.readonly #msg-compose .btn-gold{display:block!important;}
+body.readonly .photo-del{display:none!important;}
+body.readonly #prest-toolbar{display:none!important;}
+body.readonly .btn-red{display:none!important;}
+body.readonly .btn-gold:not(.btn-recu){display:none!important;}
+body.readonly .photo-del{display:none!important;}
+body.readonly #page-rp .btn-gold{display:none!important;}
+body.readonly #page-rp .btn-teal{display:none!important;}
+
+@media print{
+  body{background:white!important;color:#111!important;}
+  body::before{display:none!important;}
+  .bnav,.toolbar,.chips,.cc-bot .btn,.chg .btn,.urgence{display:none!important;}
+  #page-db,#page-cp,#page-ch,#page-mf,.subpage{display:none!important;}
+  #page-rp{display:block!important;padding:10px!important;}
+  .card,.rap-card,.bilan-box,.kpi,.prog-wrap,.solde-banner{background:white!important;border:1px solid #ddd!important;color:#111!important;}
+  .rap-lbl,.bb-lbl,.kl,.sb-label{color:#555!important;}
+  .rap-val,.bb-val,.kv,.sb-val{color:#111!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div class="login-screen" id="login-screen">
+  <div class="login-logo">🏛</div>
+  <div class="login-title">Syndicat des Copropriétaires</div>
+  <div class="login-sub">27 Rue Omar Zayane — Hammamet · 2025/2026</div>
+  <div class="login-status" id="online-status"><span style="width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block"></span> En ligne</div>
+
+
+  <!-- Accès Propriétaire — en haut, prominent -->
+  <div class="consult-btn" onclick="enterConsult()" style="background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.25);border-radius:16px;padding:18px 20px;width:100%;max-width:360px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:26px">👤</span>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#fff">Accès Propriétaire</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">Consultation · sans mot de passe</div>
+      </div>
+    </div>
+    <span style="color:rgba(255,255,255,0.5);font-size:20px">→</span>
+  </div>
+
+  <!-- Accès Syndic — compact, en bas -->
+  <div class="login-box" style="padding:12px 14px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:14px">🔑</span>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8)">Accès Syndic — Code PIN</div>
+      </div>
+    </div>
+    <div class="pin-dots" id="ls-dots" style="justify-content:flex-start;gap:8px;margin:0 0 6px"></div>
+    <div class="pin-msg" id="ls-msg" style="text-align:left;margin-bottom:6px;font-size:11px"></div>
+    <div class="pin-pad" style="gap:5px">
+      <div class="pin-btn" onclick="lsPin(1)" style="padding:11px;font-size:17px">1</div><div class="pin-btn" onclick="lsPin(2)" style="padding:11px;font-size:17px">2</div><div class="pin-btn" onclick="lsPin(3)" style="padding:11px;font-size:17px">3</div>
+      <div class="pin-btn" onclick="lsPin(4)" style="padding:11px;font-size:17px">4</div><div class="pin-btn" onclick="lsPin(5)" style="padding:11px;font-size:17px">5</div><div class="pin-btn" onclick="lsPin(6)" style="padding:11px;font-size:17px">6</div>
+      <div class="pin-btn" onclick="lsPin(7)" style="padding:11px;font-size:17px">7</div><div class="pin-btn" onclick="lsPin(8)" style="padding:11px;font-size:17px">8</div><div class="pin-btn" onclick="lsPin(9)" style="padding:11px;font-size:17px">9</div>
+      <div class="pin-btn" onclick="lsPinC()" style="padding:11px;font-size:12px">C</div>
+      <div class="pin-btn" onclick="lsPin(0)" style="padding:11px;font-size:17px">0</div>
+      <div class="pin-btn" onclick="lsPinB()" style="padding:11px;font-size:13px">⌫</div>
+    </div>
+  </div>
+
+
+  <div class="login-footer">Syndicat des Copropriétaires 2025/2026</div>
+  <div style="font-size:9px;color:rgba(255,255,255,0.85);margin-top:8px;letter-spacing:0.08em">© Code_BHSH — All rights reserved</div>
+</div>
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:199;text-align:center;font-size:8px;color:rgba(255,255,255,0.7);padding-bottom:2px;pointer-events:none;letter-spacing:0.06em">© Code_BHSH</div>
+
+<!-- ══ READONLY BANNER ══ -->
+<div class="ro-banner hidden" id="ro-banner">
+  <span>👁 Mode Propriétaire — Lecture seule</span>
+  <button onclick="logout()" style="background:rgba(240,192,64,0.15);border:1px solid rgba(240,192,64,0.3);color:var(--accent);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer">← Quitter</button>
+</div>
+
+<!-- ══ BOTTOM NAV ══ -->
+<div class="bnav">
+  <div class="bnt on"  onclick="go('db',this)"><div class="bi">🏠</div><div class="bl">Accueil</div></div>
+  <div class="bnt"     onclick="go('cp',this)"><div class="bi">👥</div><div class="bl">Charges</div></div>
+  <div class="bnt"     onclick="go('ch',this)"><div class="bi">📊</div><div class="bl">Dépenses</div></div>
+  <div class="bnt"     onclick="go('rp',this)"><div class="bi">📄</div><div class="bl">Rapport</div></div>
+  <div class="bnt"     onclick="go('mf',this)"><div class="bi">👤</div><div class="bl">Ma Fiche</div></div>
+  <div class="bnt"     onclick="go('msg',this)" id="bnt-msg"><div class="bi">💬</div><div class="bl">Messages</div></div>
+  <div class="bnt"     onclick="go('prest',this)"><div class="bi">🔧</div><div class="bl">Prestataires</div></div>
+</div>
+
+<!-- ══════ DASHBOARD ══════ -->
+<div class="page on" id="page-db">
+  <div class="urgence">
+    <span style="font-size:16px;flex-shrink:0">🚨</span>
+    <div>
+      <div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">Urgences à financer</div>
+      <div style="font-size:11px;color:var(--sub);line-height:1.5">Changement de la <strong style="color:var(--text)">pompe</strong> + <strong style="color:var(--text)">réfection des peintures extérieures</strong>.</div>
+    </div>
+  </div>
+
+  <div class="solde-banner">
+    <div>
+      <div class="sb-label">Solde disponible</div>
+      <div class="sb-val" id="db-solde">—</div>
+      <div style="font-size:10px;color:var(--sub);margin-top:4px">Encaissé − Dépensé</div>
+    </div>
+    <div style="text-align:right">
+      <div class="sb-label">Exercice</div>
+      <div style="font-size:11px;color:var(--text);margin-top:3px;font-weight:500">Juil. 2025 — Juin 2026</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi kg"><div class="kl">Recettes</div><div class="kv" id="db-enc">—</div><div class="ks" id="db-enc-nb">—</div></div>
+    <div class="kpi kr"><div class="kl">Dépenses</div><div class="kv" id="db-dep">—</div><div class="ks" id="db-dep-nb">—</div></div>
+    <div class="kpi ka"><div class="kl">Impayés</div><div class="kv" id="db-imp">—</div><div class="ks" id="db-imp-nb">—</div></div>
+    <div class="kpi kb"><div class="kl">Recouvrement</div><div class="kv" id="db-rate">—</div><div class="ks">des cotisations</div></div>
+  </div>
+
+  <div class="prog-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--sub);font-weight:600">Taux de recouvrement 2026</span>
+      <strong style="font-family:var(--serif);font-size:18px;color:var(--accent)" id="db-prog-pct">0%</strong>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="db-prog-bar" style="width:0"></div></div>
+    <div class="prog-meta"><span id="db-prog-l">0 DT</span><span id="db-prog-r">0 DT attendu</span></div>
+  </div>
+
+  <div class="chart-card">
+    <div class="card-title">Dépenses par catégorie</div>
+    <div class="chart-wrap"><canvas id="chart-cat"></canvas></div>
+  </div>
+
+  <div class="sec-head">
+    <div class="sec-title">Impayés en cours</div>
+    <span class="sec-count sc-r" id="db-imp-badge">—</span>
+  </div>
+  <div id="db-impayes"></div>
+</div>
+
+<!-- ══════ COPROPRIÉTAIRES / CHARGES ══════ -->
+<div class="page" id="page-cp">
+  <div class="toolbar">
+    <button class="btn btn-gold" onclick="openM('m-copro')">+ Copropriétaire</button>
+    <button class="btn btn-ghost" onclick="openM('m-pmt')">💳 Paiement</button>
+  </div>
+  <div id="copro-list"></div>
+</div>
+
+<!-- ══════ DÉPENSES ══════ -->
+<div class="page" id="page-ch">
+  <div class="toolbar">
+    <button class="btn btn-gold" onclick="openM('m-chg')">+ Dépense</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('cam-native').click()">📷 Caméra</button>
+  </div>
+  <input type="file" id="cam-native" accept="image/*" capture="environment" style="display:none" onchange="handleCam(event)"/>
+  <div class="chips" id="cat-chips">
+    <div class="chip on" data-cat="all" onclick="filterCat(this,'all')">Tout</div>
+    <div class="chip" data-cat="Nettoyage"   onclick="filterCat(this,'Nettoyage')">Nettoyage</div>
+    <div class="chip" data-cat="Électricité" onclick="filterCat(this,'Électricité')">Électricité</div>
+    <div class="chip" data-cat="Entretien"   onclick="filterCat(this,'Entretien')">Entretien</div>
+    <div class="chip" data-cat="Réparation"  onclick="filterCat(this,'Réparation')">Réparation</div>
+    <div class="chip" data-cat="Autre"       onclick="filterCat(this,'Autre')">Autre</div>
+  </div>
+  <div id="chg-list"></div>
+</div>
+
+<!-- ══════ MESSAGES ══════ -->
+<div class="page" id="page-msg">
+  <!-- CONSULT: compose form -->
+  <div id="msg-compose">
+    <div style="text-align:center;padding:16px 0 12px">
+      <div style="font-size:32px;margin-bottom:8px">✉️</div>
+      <div style="font-family:var(--serif);font-size:17px">Contacter le Syndic</div>
+      <div style="font-size:11px;color:var(--sub);margin-top:4px">Votre message sera visible par le syndic</div>
+    </div>
+    <div class="card">
+      <div class="fg">
+        <label class="fl">Votre nom</label>
+        <select class="fi" id="msg-from">
+          <option value="">— Sélectionner —</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Sujet</label>
+        <select class="fi" id="msg-subject">
+          <option>Question sur ma cotisation</option>
+          <option>Signalement d'un problème</option>
+          <option>Demande de reçu</option>
+          <option>Travaux / Entretien</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Message</label>
+        <textarea class="fi" id="msg-body" rows="4" placeholder="Écrivez votre message ici..." style="resize:none;line-height:1.5"></textarea>
+      </div>
+      <button class="btn btn-gold btn-full" onclick="sendMsg()">📤 Envoyer au syndic</button>
+    </div>
+  </div>
+
+  <!-- SYNDIC: inbox -->
+  <div id="msg-inbox" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-family:var(--serif);font-size:17px">📬 Boîte de réception</div>
+      <span class="sec-count sc-r" id="msg-unread-badge" style="display:none">0 nouveau</span>
+    </div>
+    <div id="msg-list"></div>
+  </div>
+</div>
+
+<!-- ══════ PRESTATAIRES ══════ -->
+<div class="page" id="page-prest">
+
+  <!-- SYNDIC: toolbar -->
+  <div class="toolbar" id="prest-toolbar">
+    <button class="btn btn-gold" onclick="openM('m-prest')">+ Prestataire</button>
+    <button class="btn btn-ghost" onclick="openM('m-devis')">📋 Devis</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="chips" id="prest-chips">
+    <div class="chip on" onclick="filterPrest(this,'all')">Tout</div>
+    <div class="chip" onclick="filterPrest(this,'prestataire')">🔧 Prestataires</div>
+    <div class="chip" onclick="filterPrest(this,'devis')">📋 Devis</div>
+    <div class="chip" onclick="filterPrest(this,'recommandation')">⭐ Recommandations</div>
+  </div>
+
+  <div id="prest-list"></div>
+</div>
+
+<!-- ══════ RAPPORT ══════ -->
+<div class="page" id="page-rp">
+  <div id="rp-bilan"></div>
+  <div id="rp-enc"></div>
+  <div id="rp-chg"></div>
+  <div id="rp-imp"></div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+    <button class="btn btn-gold btn-full" onclick="printRapport()">🖨 Imprimer / PDF</button>
+    <button class="btn btn-teal btn-full" onclick="shareRapport()">↗ Partager</button>
+    <button class="btn btn-ghost btn-full" onclick="changeSyndicPin()">🔑 Changer le PIN Syndic</button>
+    <button class="btn btn-ghost btn-full" style="color:var(--red);border-color:rgba(248,113,113,0.3)" onclick="resetAll()">↺ Réinitialiser</button>
+  </div>
+</div>
+
+<!-- ══════ MA FICHE ══════ -->
+<div class="page" id="page-mf">
+  <div style="text-align:center;padding:20px 0 8px">
+    <div class="mf-avatar">👤</div>
+    <div style="font-family:var(--serif);font-size:18px">Espace Copropriétaire</div>
+    <div style="font-size:11px;color:var(--sub);margin-top:4px">Saisissez vos coordonnées pour rester informé(e)</div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">Sélectionnez votre nom</div>
+    <select class="fi" id="mf-select" onchange="loadMF()">
+      <option value="">— Choisir —</option>
+    </select>
+  </div>
+  <div id="mf-pin-section" style="display:none"></div>
+  <div id="mf-body" style="display:none"></div>
+</div>
+
+<!-- ══════ SUBPAGE : DETAIL COPRO ══════ -->
+<div class="subpage" id="sp-copro">
+  <div class="back-btn" onclick="closeSP('sp-copro')">‹ Retour</div>
+  <div id="sp-copro-body"></div>
+</div>
+
+<!-- ══════ SUBPAGE : DETAIL CHARGE ══════ -->
+<div class="subpage" id="sp-chg">
+  <div class="back-btn" onclick="closeSP('sp-chg')">‹ Retour</div>
+  <div id="sp-chg-body"></div>
+</div>
+
+<!-- ══════ MODALES ══════ -->
+
+<!-- Copropriétaire -->
+<div class="overlay" id="m-copro">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">Nouveau copropriétaire</div><button class="modal-x" onclick="closeM('m-copro')">✕</button></div>
+    <div class="fg"><label class="fl">Nom complet</label><input class="fi" id="fc-nom" placeholder="Ex: Mr Dupont"/></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Cotisation 2026 (DT)</label><input class="fi" id="fc-q" type="number" placeholder="150"/></div>
+      <div class="fg"><label class="fl">Arriérés 2025 (DT)</label><input class="fi" id="fc-s" type="number" placeholder="0"/></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Appartement</label><input class="fi" id="fc-a" placeholder="Ex: A2"/></div>
+      <div class="fg"><label class="fl">Téléphone</label><input class="fi" id="fc-t" type="tel" placeholder="+216..."/></div>
+    </div>
+    <div class="fg"><label class="fl">Email</label><input class="fi" id="fc-e" type="email" placeholder="email@..."/></div>
+    <button class="btn btn-gold btn-full" style="margin-top:4px" onclick="saveCopro()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Paiement -->
+<div class="overlay" id="m-pmt">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">Enregistrer un paiement</div><button class="modal-x" onclick="closeM('m-pmt')">✕</button></div>
+    <div class="fg"><label class="fl">Copropriétaire</label><select class="fi" id="fp-c"></select></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Montant (DT)</label><input class="fi" id="fp-m" type="number" placeholder="150"/></div>
+      <div class="fg"><label class="fl">Date</label><input class="fi" id="fp-d" type="date"/></div>
+    </div>
+    <div class="fg"><label class="fl">Mode</label>
+      <select class="fi" id="fp-mode"><option>Espèces</option><option>Chèque</option><option>Virement</option><option>Via locataire</option></select>
+    </div>
+    <div class="fg"><label class="fl">Note (optionnel)</label><input class="fi" id="fp-n" placeholder="..."/></div>
+    <button class="btn btn-gold btn-full" style="margin-top:4px" onclick="savePmt()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Dépense -->
+<div class="overlay" id="m-chg">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title" id="m-chg-title">Nouvelle dépense</div><button class="modal-x" onclick="closeM('m-chg')">✕</button></div>
+    <input type="hidden" id="fch-id"/>
+    <div class="fg"><label class="fl">Motif</label><input class="fi" id="fch-m" placeholder="Ex: Ménage, STEG..."/></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Montant (DT)</label><input class="fi" id="fch-o" type="number" placeholder="0"/></div>
+      <div class="fg"><label class="fl">Date</label><input class="fi" id="fch-d" type="date"/></div>
+    </div>
+    <div class="fg"><label class="fl">Catégorie</label>
+      <select class="fi" id="fch-c"><option>Nettoyage</option><option>Électricité</option><option>Entretien</option><option>Réparation</option><option>Autre</option></select>
+    </div>
+    <div class="fg"><label class="fl">Fournisseur / Tiers</label><input class="fi" id="fch-t" placeholder="Ex: 3M PRO..."/></div>
+    <div class="fg">
+      <label class="fl">Photos de preuve</label>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn btn-ghost" style="flex:1" onclick="document.getElementById('fch-file').click()">🖼 Galerie</button>
+        <button type="button" class="btn btn-ghost" style="flex:1" onclick="document.getElementById('cam-chg').click()">📷 Caméra</button>
+      </div>
+      <input type="file" id="fch-file" accept="image/*" style="display:none" onchange="addPhoto(event)"/>
+      <input type="file" id="cam-chg" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(event)"/>
+      <div class="photos-grid" id="fch-photos"></div>
+    </div>
+    <button class="btn btn-gold btn-full" style="margin-top:4px" onclick="saveChg()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Prestataire -->
+<div class="overlay" id="m-prest">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title" id="m-prest-title">Nouveau prestataire</div><button class="modal-x" onclick="closeM('m-prest')">✕</button></div>
+    <input type="hidden" id="fp2-id"/>
+    <div class="fg"><label class="fl">Nom / Société</label><input class="fi" id="fp2-nom" placeholder="Ex: 3M PRO, Électricien Ben Ali..."/></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Spécialité</label>
+        <select class="fi" id="fp2-spec">
+          <option>Électricité</option><option>Plomberie</option><option>Peinture</option>
+          <option>Jardinage</option><option>Nettoyage</option><option>Maçonnerie</option>
+          <option>Ascenseur</option><option>Serrurerie</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Note (1-5)</label>
+        <select class="fi" id="fp2-note">
+          <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+          <option value="4">⭐⭐⭐⭐ Bien</option>
+          <option value="3">⭐⭐⭐ Correct</option>
+          <option value="2">⭐⭐ Moyen</option>
+          <option value="1">⭐ Mauvais</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Téléphone</label><input class="fi" id="fp2-tel" type="tel" placeholder="+216..."/></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="fp2-email" type="email" placeholder="email@..."/></div>
+    </div>
+    <div class="fg"><label class="fl">Adresse</label><input class="fi" id="fp2-adresse" placeholder="Ex: Rue X, Hammamet..."/></div>
+    <div class="fg"><label class="fl">Recommandation (texte)</label>
+      <textarea class="fi" id="fp2-comment" rows="3" placeholder="Ex: Sérieux, ponctuel, bon rapport qualité/prix..." style="resize:none"></textarea>
+    </div>
+    <div class="fg">
+      <label class="fl">Photo(s) de recommandation</label>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn btn-ghost" style="flex:1" onclick="document.getElementById('fp2-file').click()">🖼 Galerie</button>
+        <button type="button" class="btn btn-ghost" style="flex:1" onclick="document.getElementById('fp2-cam').click()">📷 Caméra</button>
+      </div>
+      <input type="file" id="fp2-file" accept="image/*" multiple style="display:none" onchange="addPrestPhoto(event)"/>
+      <input type="file" id="fp2-cam" accept="image/*" capture="environment" style="display:none" onchange="addPrestPhoto(event)"/>
+      <div class="photos-grid" id="fp2-photos"></div>
+    </div>
+    <button class="btn btn-gold btn-full" style="margin-top:4px" onclick="savePrest()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Devis -->
+<div class="overlay" id="m-devis">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title" id="m-devis-title">Nouveau devis</div><button class="modal-x" onclick="closeM('m-devis')">✕</button></div>
+    <input type="hidden" id="fd-id"/>
+    <div class="fg"><label class="fl">Prestataire</label><input class="fi" id="fd-prest" placeholder="Nom du prestataire"/></div>
+    <div class="fg"><label class="fl">Objet des travaux</label><input class="fi" id="fd-objet" placeholder="Ex: Réfection peinture façade..."/></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Montant (DT)</label><input class="fi" id="fd-montant" type="number" placeholder="0"/></div>
+      <div class="fg"><label class="fl">Date du devis</label><input class="fi" id="fd-date" type="date"/></div>
+    </div>
+    <div class="fg"><label class="fl">Statut</label>
+      <select class="fi" id="fd-statut">
+        <option value="en_attente">⏳ En attente</option>
+        <option value="accepte">✅ Accepté</option>
+        <option value="refuse">❌ Refusé</option>
+        <option value="en_cours">🔨 En cours</option>
+        <option value="termine">✓ Terminé</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Notes</label>
+      <textarea class="fi" id="fd-notes" rows="2" placeholder="Remarques..." style="resize:none"></textarea>
+    </div>
+    <div class="fg">
+      <label class="fl">Photos du devis</label>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn btn-ghost" style="flex:1" onclick="document.getElementById('fd-file').click()">🖼 Galerie</button>
+        <button type="button" class="btn btn-ghost" style="flex:1" onclick="document.getElementById('fd-cam').click()">📷 Caméra</button>
+      </div>
+      <input type="file" id="fd-file" accept="image/*" multiple style="display:none" onchange="addDevisPhoto(event)"/>
+      <input type="file" id="fd-cam" accept="image/*" capture="environment" style="display:none" onchange="addDevisPhoto(event)"/>
+      <div class="photos-grid" id="fd-photos"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Document PDF / fichier</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button type="button" class="btn btn-ghost" style="flex:1" onclick="document.getElementById('fd-doc').click()">📎 Joindre un fichier</button>
+      </div>
+      <input type="file" id="fd-doc" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="handleDevisDoc(event)"/>
+      <div id="fd-doc-preview" style="display:none;margin-top:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:10px;display:flex;justify-content:space-between;align-items:center">
+        <span id="fd-doc-name" style="font-size:12px;color:var(--sub)">—</span>
+        <button onclick="clearDevisDoc()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px">✕</button>
+      </div>
+    </div>
+    <button class="btn btn-gold btn-full" style="margin-top:4px" onclick="saveDevis()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- PIN Syndic (accès admin) -->
+<div class="overlay" id="m-pin-syndic">
+  <div class="modal" style="text-align:center">
+    <div class="modal-hd"><div class="modal-title">🔑 Accès Syndic</div><button class="modal-x" onclick="closeM('m-pin-syndic')">✕</button></div>
+    <div style="font-size:11px;color:var(--sub);margin-bottom:4px">Entrez le code PIN pour modifier</div>
+    <div class="pin-dots" id="ps-dots"></div>
+    <div class="pin-msg" id="ps-msg"></div>
+    <div class="pin-pad">
+      <div class="pin-btn" onclick="pinKey('ps',1)">1</div><div class="pin-btn" onclick="pinKey('ps',2)">2</div><div class="pin-btn" onclick="pinKey('ps',3)">3</div>
+      <div class="pin-btn" onclick="pinKey('ps',4)">4</div><div class="pin-btn" onclick="pinKey('ps',5)">5</div><div class="pin-btn" onclick="pinKey('ps',6)">6</div>
+      <div class="pin-btn" onclick="pinKey('ps',7)">7</div><div class="pin-btn" onclick="pinKey('ps',8)">8</div><div class="pin-btn" onclick="pinKey('ps',9)">9</div>
+      <div class="pin-btn" onclick="pinClear('ps')" style="font-size:14px">C</div>
+      <div class="pin-btn" onclick="pinKey('ps',0)">0</div>
+      <div class="pin-btn" onclick="pinBack('ps')" style="font-size:16px">⌫</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════ STATE ══════
+const SK = 'syndic_pro_v2';
+let S = {copros:[],pmts:[],chgs:[],syndicPin:'1234'};
+let catFilter = 'all';
+let chartInst = null;
+let capturedPhotos = [];
+let pendingAction = null;
+
+function load(){
+  const d = localStorage.getItem(SK);
+  if(d) S = JSON.parse(d);
+  if(!S.syndicPin) S.syndicPin = '1234';
+  if(!S.copros.length) seed();
+}
+function save(){
+  try { localStorage.setItem(SK, JSON.stringify(S)); }
+  catch(e){ showToast('⚠ Stockage plein — photos non sauvegardées'); }
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+
+// ══════ SEED ══════
+function seed(){
+  const copros=[
+    {nom:'Kamerji Nasreddine', appt:'—',quote:150,solde2025:0},
+    {nom:'Hichem El Beji',     appt:'—',quote:150,solde2025:0},
+    {nom:'Othmani Mounira',    appt:'—',quote:150,solde2025:0},
+    {nom:'Mejri Saida',        appt:'—',quote:150,solde2025:0},
+    {nom:'Ben Cheikh Ridha',   appt:'—',quote:150,solde2025:0},
+    {nom:'Bouaskhar Hattab',   appt:'—',quote:720,solde2025:570},
+    {nom:'Dhambri Slèheddine', appt:'—',quote:150,solde2025:0},
+    {nom:'Adellatif Manssour', appt:'—',quote:300,solde2025:150},
+    {nom:'Badaoui Noura',      appt:'—',quote:150,solde2025:0},
+    {nom:'Aouini Bachir',      appt:'—',quote:300,solde2025:150},
+    {nom:'Daaj Najwa',         appt:'—',quote:150,solde2025:0},
+    {nom:'Melliti Mohamed',    appt:'—',quote:300,solde2025:150},
+    {nom:'Othmani Hassen',     appt:'—',quote:300,solde2025:150},
+    {nom:'Ben Hamida / Magri', appt:'—',quote:150,solde2025:0},
+  ];
+  copros.forEach(c=>S.copros.push({id:uid(),tel:'',email:'',pin:'', ...c}));
+
+  const pmts=[
+    {nom:'Kamerji Nasreddine', montant:120,date:'2025-11-19',mode:'Espèces',note:''},
+    {nom:'Hichem El Beji',     montant:150,date:'2025-11-19',mode:'Espèces',note:''},
+    {nom:'Mejri Saida',        montant:150,date:'2025-11-19',mode:'Espèces',note:''},
+    {nom:'Othmani Mounira',    montant:150,date:'2025-11-19',mode:'Espèces',note:''},
+    {nom:'Ben Hamida / Magri', montant:150,date:'2025-11-19',mode:'Espèces',note:''},
+    {nom:'Badaoui Noura',      montant:150,date:'2025-11-19',mode:'Via locataire',note:'Payé par le locataire'},
+    {nom:'Daaj Najwa',         montant:130,date:'2025-12-07',mode:'Espèces',note:'20 DT retenus'},
+    {nom:'Dhambri Slèheddine', montant:150,date:'2026-02-12',mode:'Espèces',note:''},
+    {nom:'Ben Cheikh Ridha',   montant:150,date:'2026-02-19',mode:'Espèces',note:''},
+  ];
+  pmts.forEach(p=>{
+    const c=S.copros.find(x=>x.nom===p.nom);
+    if(c) S.pmts.push({id:uid(),coproId:c.id,...p});
+  });
+
+  const chgs=[
+    {motif:'Ménage (Mariem)',                    montant:20,  date:'2025-11-16',cat:'Nettoyage',  tiers:'Mariem'},
+    {motif:'STEG — Électricité',                 montant:19,  date:'2025-11-19',cat:'Électricité',tiers:'STEG'},
+    {motif:'Outils jardinier — Taille-haie',     montant:35,  date:'2025-11-19',cat:'Entretien',  tiers:'3M PRO'},
+    {motif:'Location échelle',                   montant:20,  date:'2025-11-19',cat:'Entretien',  tiers:''},
+    {motif:"Produits d'entretien",               montant:5.15,date:'2025-11-19',cat:'Entretien',  tiers:'Anouar'},
+    {motif:'Fournitures (Carnet, stylo)',         montant:4.04,date:'2025-11-19',cat:'Autre',      tiers:''},
+    {motif:'Réparations Électriques',            montant:15,  date:'2025-11-21',cat:'Réparation', tiers:''},
+    {motif:'Plastique de protection',            montant:10,  date:'2025-11-21',cat:'Entretien',  tiers:'3M PRO'},
+    {motif:'Ménage (Maryem)',                    montant:20,  date:'2025-12-07',cat:'Nettoyage',  tiers:'Maryem'},
+    {motif:'Fosse Septique (3 voyages)',          montant:160, date:'2026-02-22',cat:'Entretien',  tiers:''},
+    {motif:'Ménage',                             montant:25,  date:'2026-03-05',cat:'Nettoyage',  tiers:'Femme plastique'},
+    {motif:"Produits d'entretien",               montant:6,   date:'2026-03-07',cat:'Entretien',  tiers:'Épicerie Thoraya'},
+    {motif:'Ménage',                             montant:20,  date:'2026-03-10',cat:'Nettoyage',  tiers:'Femme de ménage'},
+    {motif:'Ménage',                             montant:20,  date:'2026-03-16',cat:'Nettoyage',  tiers:'Femme de ménage'},
+    {motif:'Réparations Électriques',            montant:25,  date:'2026-03-17',cat:'Réparation', tiers:'3M PRO'},
+    {motif:'STEG — Électricité',                 montant:8,   date:'2026-03-27',cat:'Électricité',tiers:'STEG'},
+    {motif:'Ménage',                             montant:20,  date:'2026-04-01',cat:'Nettoyage',  tiers:'Femme plastique'},
+    {motif:'Ménage',                             montant:20,  date:'2026-04-06',cat:'Nettoyage',  tiers:'Femme plastique'},
+    {motif:'Peinture entrée et escalier',        montant:78,  date:'2026-04-10',cat:'Entretien',  tiers:'3M PRO'},
+    {motif:'Ménage',                             montant:20,  date:'2026-04-13',cat:'Nettoyage',  tiers:'Femme de ménage'},
+    {motif:'Rampe escalier',                     montant:280, date:'2026-04-24',cat:'Réparation', tiers:''},
+    {motif:'Évacuation Déchets',                 montant:80,  date:'2026-04-28',cat:'Entretien',  tiers:''},
+    {motif:'Ménage (Mejda)',                     montant:60,  date:'2026-04-30',cat:'Nettoyage',  tiers:'Mejda'},
+    {motif:'Ménage (Mejda)',                     montant:20,  date:'2026-05-03',cat:'Nettoyage',  tiers:'Mejda'},
+    {motif:'Ménage',                             montant:15,  date:'2026-05-04',cat:'Nettoyage',  tiers:''},
+    {motif:'Peinture',                           montant:70,  date:'2026-05-10',cat:'Entretien',  tiers:''},
+    {motif:'Ménage',                             montant:40,  date:'2026-05-13',cat:'Nettoyage',  tiers:''},
+    {motif:'Ménage',                             montant:20,  date:'2026-05-21',cat:'Nettoyage',  tiers:''},
+    {motif:'Ménage',                             montant:10,  date:'2026-05-23',cat:'Nettoyage',  tiers:''},
+  ];
+  chgs.forEach(c=>S.chgs.push({id:uid(),photos:[],...c}));
+  if(!S.messages) S.messages=[];
+  if(!S.prestataires) S.prestataires=[];
+  if(!S.devis) S.devis=[];
+  save();
+}
+
+// ══════ HELPERS ══════
+function f(n){ return Number(n).toLocaleString('fr-TN',{minimumFractionDigits:2,maximumFractionDigits:2})+' DT'; }
+function fd(d){ if(!d)return '—'; const [y,m,dd]=d.split('-'); return dd+'/'+m+'/'+y; }
+function paidFor(id){ return S.pmts.filter(p=>p.coproId===id).reduce((s,p)=>s+Number(p.montant),0); }
+function duFor(c){ return Math.max(0,Number(c.quote)-paidFor(c.id)); }
+const catCls = {'Nettoyage':'cn','Électricité':'ce','Entretien':'ct','Réparation':'cr','Autre':'ca'};
+
+// ══════ NAVIGATION ══════
+function go(id,el){
+  // Block restricted pages in consult mode
+  if(appMode==='consult' && (id==='cp')){
+    showToast('Accès réservé au syndic');
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.bnt').forEach(t=>t.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  el.classList.add('on');
+  render(id);
+}
+function openSP(id){
+  if(appMode==='consult'){ showToast('Accès réservé au syndic'); return; }
+  document.getElementById(id).classList.add('on');
+}
+function closeSP(id){ document.getElementById(id).classList.remove('on'); }
+
+function render(id){
+  if(id==='db') renderDB();
+  if(id==='cp') renderCP();
+  if(id==='ch') renderCH();
+  if(id==='rp') renderRP();
+  if(id==='mf') renderMF();
+  if(id==='msg') renderMsg();
+  if(id==='prest') renderPrest();
+}
+
+// ══════ DASHBOARD ══════
+function renderDB(){
+  const enc=S.pmts.reduce((s,p)=>s+Number(p.montant),0);
+  const dep=S.chgs.reduce((s,c)=>s+Number(c.montant),0);
+  const solde=enc-dep;
+  const totalQ=S.copros.reduce((s,c)=>s+Number(c.quote),0);
+  const impayes=S.copros.filter(c=>duFor(c)>0);
+  const totalImp=impayes.reduce((s,c)=>s+duFor(c),0);
+  const rate=totalQ>0?Math.round(enc/totalQ*100):0;
+
+  document.getElementById('db-solde').textContent=f(solde);
+  document.getElementById('db-enc').textContent=f(enc);
+  document.getElementById('db-enc-nb').textContent=S.pmts.length+' paiements';
+  document.getElementById('db-dep').textContent=f(dep);
+  document.getElementById('db-dep-nb').textContent=S.chgs.length+' dépenses';
+  document.getElementById('db-imp').textContent=f(totalImp);
+  document.getElementById('db-imp-nb').textContent=impayes.length+' copropriétaires';
+  document.getElementById('db-rate').textContent=rate+'%';
+  document.getElementById('db-prog-pct').textContent=rate+'%';
+  document.getElementById('db-prog-bar').style.width=Math.min(rate,100)+'%';
+  document.getElementById('db-prog-l').textContent=f(enc)+' perçu';
+  document.getElementById('db-prog-r').textContent=f(totalQ)+' attendu';
+  document.getElementById('db-imp-badge').textContent=impayes.length+' débiteurs';
+
+  document.getElementById('db-impayes').innerHTML=impayes.length===0
+    ? '<div class="empty">✓ Aucun impayé</div>'
+    : impayes.sort((a,b)=>duFor(b)-duFor(a)).map(c=>`
+      <div class="list-item" onclick="showCopro('${c.id}')">
+        <div class="li-left"><div class="li-name">${c.nom}</div><div class="li-sub">Payé: ${f(paidFor(c.id))}</div></div>
+        <div class="li-right"><div class="li-amt" style="color:var(--red)">${f(duFor(c))}</div></div>
+        <span class="arrow">›</span>
+      </div>`).join('');
+
+  const byCat={};
+  S.chgs.forEach(c=>{byCat[c.cat]=(byCat[c.cat]||0)+Number(c.montant);});
+  const cats=Object.keys(byCat), vals=cats.map(k=>byCat[k]);
+  const colors=['#2dd4bf','#f0c040','#60a5fa','#f87171','#94afd4'];
+  if(chartInst) chartInst.destroy();
+  const ctx=document.getElementById('chart-cat').getContext('2d');
+  chartInst=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:cats,datasets:[{data:vals,backgroundColor:colors,borderColor:'transparent',borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{position:'right',labels:{color:'rgba(255,255,255,0.6)',font:{size:10},boxWidth:10,padding:8}},
+      tooltip:{callbacks:{label:c=>' '+f(c.parsed)}}}}
+  });
+}
+
+// ══════ COPROPRIÉTAIRES ══════
+function renderCP(){
+  const el=document.getElementById('copro-list');
+  if(!S.copros.length){el.innerHTML='<div class="empty">Aucun copropriétaire.</div>';return;}
+  el.innerHTML=S.copros.map(c=>{
+    const paid=paidFor(c.id),du=duFor(c);
+    const pct=Number(c.quote)>0?Math.min(100,Math.round(paid/Number(c.quote)*100)):0;
+    const badge=du<=0?'<span class="badge b-ok">Charges à jour</span>'
+               :paid>0?'<span class="badge b-par">Partiel</span>'
+               :'<span class="badge b-nok">Impayé</span>';
+    const coordKO=!c.tel&&!c.email;
+    return `<div class="cc" onclick="showCopro('${c.id}')">
+      <div class="cc-top">
+        <div>
+          <div class="cc-name">${c.nom}</div>
+          <div class="cc-meta">Cotisation 2026: ${f(c.quote)}${c.solde2025>0?' · <span style="color:var(--red)">'+c.solde2025+' DT arriérés</span>':''}</div>
+          ${coordKO?'<div class="cc-meta" style="color:var(--red);margin-top:2px">⚠ Coordonnées manquantes</div>':'<div class="cc-meta" style="margin-top:2px">'+(c.tel?'☎ '+c.tel:'')+(c.email?' · ✉ '+c.email:'')+'</div>'}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">${badge}<span class="arrow">›</span></div>
+      </div>
+      <div class="cc-bar"><div class="cc-bar-fill" style="width:${pct}%"></div></div>
+      <div class="cc-bot">
+        <div style="font-size:11px;color:var(--sub)">Payé: <strong style="color:var(--green)">${f(paid)}</strong>${du>0?' · Reste: <strong style="color:var(--red)">'+f(du)+'</strong>':''}</div>
+        <div style="font-size:10px;color:var(--muted)">${pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showCopro(id){
+  if(appMode==='consult'){ showToast('Accès réservé au syndic'); return; }
+  const c=S.copros.find(x=>x.id===id);
+  if(!c) return;
+  const pmts=S.pmts.filter(p=>p.coproId===id).sort((a,b)=>b.date.localeCompare(a.date));
+  const paid=paidFor(id),du=duFor(c);
+  const pct=Number(c.quote)>0?Math.min(100,Math.round(paid/Number(c.quote)*100)):0;
+  const badge=du<=0?'<span class="badge b-ok">Charges à jour</span>'
+             :paid>0?'<span class="badge b-par">Partiel</span>'
+             :'<span class="badge b-nok">Impayé</span>';
+
+  document.getElementById('sp-copro-body').innerHTML=`
+    <div class="det-header">
+      <div class="det-avatar">👤</div>
+      <div class="det-name">${c.nom}</div>
+      <div class="det-badge">${badge}</div>
+    </div>
+    <div style="padding:0 16px">
+      <!-- Coordonnées -->
+      <div class="card">
+        <div class="card-title">Coordonnées</div>
+        ${c.tel||c.email?`
+          ${c.tel?'<div style="font-size:12px;margin-bottom:4px">☎ <strong>'+c.tel+'</strong></div>':''}
+          ${c.email?'<div style="font-size:12px">✉ <strong>'+c.email+'</strong></div>':''}
+        `:`<div style="text-align:center;padding:12px 0">
+          <div style="font-size:24px;margin-bottom:6px">📬</div>
+          <div style="font-size:12px;color:var(--sub)">Aucune coordonnée renseignée</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Le propriétaire peut les saisir depuis sa fiche personnelle</div>
+        </div>`}
+      </div>
+
+      <!-- Cotisations -->
+      <div class="card">
+        <div class="card-title" style="display:flex;align-items:center;gap:6px">💰 Cotisations</div>
+        ${pmts.length===0?'<div class="empty" style="padding:12px">Aucun paiement enregistré</div>':
+          pmts.map(p=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+            <div>
+              <div style="font-size:12px;font-weight:500">Cotisation 2026</div>
+              <div style="font-size:10px;color:var(--sub)">${fd(p.date)}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:var(--serif);font-size:14px;color:var(--green)">${f(p.montant)}</span>
+              <span class="badge b-ok">Payé</span>
+              <button class="btn btn-teal btn-sm btn-recu" onclick="genRecu('${id}','${p.id}')">📄 Reçu</button>
+            </div>
+          </div>`).join('')}
+        <div style="display:flex;justify-content:space-between;padding-top:10px;font-weight:600;font-size:13px">
+          <span>Total payé</span><span style="color:var(--green)">${f(paid)}</span>
+        </div>
+      </div>
+
+      <!-- Progression -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:12px;color:var(--sub)">Progression</span>
+          <span style="font-size:12px;font-weight:600">${pct}%</span>
+        </div>
+        <div class="prog-bar" style="margin:0 0 8px"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);border-radius:8px;padding:10px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">Payé</div>
+            <div style="font-family:var(--serif);font-size:16px;color:var(--green);margin-top:3px">${f(paid)}</div>
+          </div>
+          <div style="background:${du>0?'rgba(248,113,113,0.1)':'rgba(74,222,128,0.1)'};border:1px solid ${du>0?'rgba(248,113,113,0.2)':'rgba(74,222,128,0.2)'};border-radius:8px;padding:10px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">${du>0?'Reste dû':'Statut'}</div>
+            <div style="font-family:var(--serif);font-size:16px;color:${du>0?'var(--red)':'var(--green)'};margin-top:3px">${du>0?f(du):'✓ À jour'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <button class="btn btn-gold btn-full" onclick="quickPmt('${id}')">+ Paiement</button>
+        <button class="btn btn-ghost btn-full" onclick="editCopro('${id}')">✎ Modifier</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button class="btn btn-teal btn-full" style="font-size:10px" onclick="setPinCopro('${id}')">🔑 Attribuer un PIN</button>
+        <button class="btn btn-red btn-full" style="font-size:10px" onclick="delCopro('${id}')">🗑 Supprimer</button>
+      </div>
+    </div>`;
+  openSP('sp-copro');
+}
+
+// ══════ CHARGES / DÉPENSES ══════
+function renderCH(){
+  const el=document.getElementById('chg-list');
+
+  // CONSULT MODE — liste complète visible, lecture seule (pas de clic, pas de boutons)
+  if(appMode==='consult'){
+    let list=[...S.chgs].sort((a,b)=>b.date.localeCompare(a.date));
+    if(catFilter!=='all') list=list.filter(c=>c.cat===catFilter);
+    if(!list.length){ el.innerHTML='<div class="empty">Aucune dépense.</div>'; return; }
+    // Banner résumé
+    const total=S.chgs.reduce((s,c)=>s+Number(c.montant),0);
+    const byCatHtml = {};
+    S.chgs.forEach(c=>{byCatHtml[c.cat]=(byCatHtml[c.cat]||0)+Number(c.montant);});
+    el.innerHTML=`
+      <div style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:var(--sub)">Total dépenses</span>
+        <span style="font-family:var(--serif);font-size:16px;color:var(--red)">${f(total)}</span>
+      </div>`
+    + list.map(c=>`
+      <div class="card" style="margin-bottom:8px;cursor:default">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500;margin-bottom:4px">${c.motif}</div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+              <span class="cat ${catCls[c.cat]||'ca'}">${c.cat}</span>
+              ${c.tiers?`<span style="font-size:10px;color:var(--sub)">${c.tiers}</span>`:''}
+              ${c.photos&&c.photos.length?`<span style="font-size:10px;color:var(--teal)">📷 ${c.photos.length}</span>`:''}
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-family:var(--serif);font-size:15px;color:var(--red)">− ${f(c.montant)}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">${fd(c.date)}</div>
+          </div>
+        </div>
+        ${c.photos&&c.photos.length?`<div class="photos-grid" style="margin-top:8px">${c.photos.map((src,i)=>`<div class="photo-thumb" onclick="viewChgPhotoRO('${c.id}',${i})"><img src="${src}"/></div>`).join('')}</div>`:''}
+      </div>`).join('');
+    return;
+  }
+
+  // SYNDIC MODE — liste complète avec actions
+  let list=[...S.chgs].sort((a,b)=>b.date.localeCompare(a.date));
+  if(catFilter!=='all') list=list.filter(c=>c.cat===catFilter);
+  if(!list.length){el.innerHTML='<div class="empty">Aucune dépense.</div>';return;}
+  el.innerHTML=list.map(c=>`
+    <div class="chg" onclick="showChg('${c.id}')">
+      <div style="flex:1">
+        <div class="chg-motif">${c.motif}</div>
+        <div class="chg-meta">
+          <span class="cat ${catCls[c.cat]||'ca'}">${c.cat}</span>
+          ${c.tiers?'<span>'+c.tiers+'</span>':''}
+          ${(c.photos&&c.photos.length)?'<span style="color:var(--teal)">📷 '+c.photos.length+'</span>':''}
+        </div>
+      </div>
+      <div>
+        <div class="chg-amt">− ${f(c.montant)}</div>
+        <div class="chg-date">${fd(c.date)}</div>
+      </div>
+      <span class="arrow">›</span>
+    </div>`).join('');
+}
+
+function filterCat(el,cat){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on'); catFilter=cat; renderCH();
+}
+
+function showChg(id){
+  if(appMode==='consult'){ showToast('Accès réservé au syndic'); return; }
+  const c=S.chgs.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('sp-chg-body').innerHTML=`
+    <div style="padding:0 16px">
+      <div class="card" style="margin-top:8px">
+        <div style="font-family:var(--serif);font-size:17px;margin-bottom:8px">${c.motif}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span class="cat ${catCls[c.cat]||'ca'}" style="font-size:10px;padding:3px 9px">${c.cat}</span>
+          <span style="font-family:var(--serif);font-size:20px;color:var(--red)">− ${f(c.montant)}</span>
+        </div>
+        <div class="rap-row"><span class="rap-lbl">Date</span><span class="rap-val">${fd(c.date)}</span></div>
+        ${c.tiers?'<div class="rap-row"><span class="rap-lbl">Fournisseur</span><span class="rap-val">'+c.tiers+'</span></div>':''}
+      </div>
+      ${c.photos&&c.photos.length?`
+        <div class="card">
+          <div class="card-title">Photos (${c.photos.length})</div>
+          <div class="photos-grid">${c.photos.map((src,i)=>`
+            <div class="photo-thumb" onclick="viewPhoto('${id}',${i})">
+              <img src="${src}"/>
+            </div>`).join('')}
+          </div>
+        </div>`:''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+        <button class="btn btn-teal btn-full" onclick="editChg('${id}');closeSP('sp-chg')">✎ Modifier</button>
+        <button class="btn btn-red btn-full" onclick="delChgSP('${id}')">🗑 Supprimer</button>
+      </div>
+    </div>`;
+  openSP('sp-chg');
+}
+
+function viewPhoto(chgId,idx){
+  const c=S.chgs.find(x=>x.id===chgId);
+  if(!c||!c.photos[idx]) return;
+  const w=window.open();
+  w.document.write('<img src="'+c.photos[idx]+'" style="max-width:100%;height:auto">');
+}
+
+function delChgSP(id){
+  if(!confirm('Supprimer cette dépense ?')) return;
+  S.chgs=S.chgs.filter(c=>c.id!==id);
+  save(); closeSP('sp-chg'); renderCH(); renderDB();
+}
+
+// ══════ RAPPORT ══════
+function renderRP(){
+  const enc=S.pmts.reduce((s,p)=>s+Number(p.montant),0);
+  const dep=S.chgs.reduce((s,c)=>s+Number(c.montant),0);
+  const solde=enc-dep;
+  const byCat={};
+  S.chgs.forEach(c=>{byCat[c.cat]=(byCat[c.cat]||0)+Number(c.montant);});
+  const imp=S.copros.filter(c=>duFor(c)>0);
+  const totalImp=imp.reduce((s,c)=>s+duFor(c),0);
+  const totalQ=S.copros.reduce((s,c)=>s+Number(c.quote),0);
+  const rate=totalQ>0?Math.round(enc/totalQ*100):0;
+
+  // CONSULT MODE — rapport complet visible, boutons masqués
+  const isSyndic = appMode==='syndic';
+  document.querySelectorAll('#page-rp .btn-gold, #page-rp .btn-teal, #page-rp .btn-ghost')
+    .forEach(b=>b.style.display=isSyndic?'':'none');
+
+  document.getElementById('rp-bilan').innerHTML=`
+    <div class="bilan-box">
+      <div><div class="bb-lbl">Encaissé</div><div class="bb-val" style="color:var(--green)">${f(enc)}</div></div>
+      <div><div class="bb-lbl">Dépensé</div><div class="bb-val" style="color:var(--red)">${f(dep)}</div></div>
+      <div><div class="bb-lbl">Solde</div><div class="bb-val" style="color:var(--accent)">${f(solde)}</div></div>
+    </div>`;
+
+  document.getElementById('rp-enc').innerHTML=`
+    <div class="rap-card">
+      <div class="rap-hd">Encaissements <span style="color:var(--green)">${f(enc)}</span></div>
+      ${S.copros.map(c=>{const p=paidFor(c.id);return p>0?'<div class="rap-row"><span class="rap-lbl">'+c.nom+'</span><span class="rap-val" style="color:var(--green)">'+f(p)+'</span></div>':''}).join('')}
+      <div class="rap-total"><span style="font-weight:600">Total</span><span style="color:var(--green);font-family:var(--serif);font-size:16px">${f(enc)}</span></div>
+    </div>`;
+
+  document.getElementById('rp-chg').innerHTML=`
+    <div class="rap-card">
+      <div class="rap-hd">Dépenses par catégorie <span style="color:var(--red)">${f(dep)}</span></div>
+      ${Object.entries(byCat).map(([k,v])=>'<div class="rap-row"><span class="rap-lbl">'+k+'</span><span class="rap-val" style="color:var(--red)">− '+f(v)+'</span></div>').join('')}
+      <div class="rap-total"><span style="font-weight:600">Total</span><span style="color:var(--red);font-family:var(--serif);font-size:16px">− ${f(dep)}</span></div>
+    </div>`;
+
+  document.getElementById('rp-imp').innerHTML=`
+    <div class="rap-card">
+      <div class="rap-hd">Impayés <span style="color:var(--red)">${f(totalImp)}</span></div>
+      ${imp.length===0?'<div style="color:var(--green);font-size:12px;padding:6px 0">✓ Aucun impayé</div>':
+        imp.map(c=>'<div class="rap-row"><span class="rap-lbl">'+c.nom+'</span><span class="rap-val" style="color:var(--red)">'+f(duFor(c))+'</span></div>').join('')}
+      <div class="rap-total"><span style="font-weight:600">Total impayés</span><span style="color:var(--red);font-family:var(--serif);font-size:16px">${f(totalImp)}</span></div>
+    </div>`;
+}
+
+// ══════ MA FICHE ══════
+function renderMF(){
+  const sel=document.getElementById('mf-select');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Choisir mon nom —</option>'+
+    S.copros.map(c=>'<option value="'+c.id+'">'+c.nom+'</option>').join('');
+  if(cur) sel.value=cur;
+}
+
+function loadMF(){
+  const id=document.getElementById('mf-select').value;
+  const pinSection=document.getElementById('mf-pin-section');
+  const body=document.getElementById('mf-body');
+  if(!id){pinSection.style.display='none';body.style.display='none';return;}
+  const c=S.copros.find(x=>x.id===id);
+  if(!c) return;
+
+  // Show PIN pad
+  pinSection.style.display='block';
+  pinSection.innerHTML=`
+    <div class="card" style="text-align:center">
+      <div style="font-size:28px;margin-bottom:8px">🔐</div>
+      <div style="font-family:var(--serif);font-size:15px;margin-bottom:4px">${c.nom}</div>
+      <div style="font-size:11px;color:var(--sub);margin-bottom:4px">
+        ${c.pin?'Entrez votre code PIN pour accéder à votre fiche':'Aucun PIN défini. Créez-en un ci-dessous.'}
+      </div>
+      <div class="pin-dots" id="mf-dots"></div>
+      <div class="pin-msg ${c.pin?'info':'err'}" id="mf-msg">${c.pin?'':'Aucun PIN défini. Créez-en un ci-dessous.'}</div>
+      <div class="pin-pad">
+        <div class="pin-btn" onclick="mfPin(1)">1</div><div class="pin-btn" onclick="mfPin(2)">2</div><div class="pin-btn" onclick="mfPin(3)">3</div>
+        <div class="pin-btn" onclick="mfPin(4)">4</div><div class="pin-btn" onclick="mfPin(5)">5</div><div class="pin-btn" onclick="mfPin(6)">6</div>
+        <div class="pin-btn" onclick="mfPin(7)">7</div><div class="pin-btn" onclick="mfPin(8)">8</div><div class="pin-btn" onclick="mfPin(9)">9</div>
+        <div class="pin-btn" onclick="mfPinC()" style="font-size:14px">C</div>
+        <div class="pin-btn" onclick="mfPin(0)">0</div>
+        <div class="pin-btn" onclick="mfPinB()" style="font-size:16px">⌫</div>
+      </div>
+      <button class="btn btn-ghost btn-full" style="margin-top:14px;font-size:11px" onclick="setMFPin('${id}')">🔑 Définir / Changer mon code PIN</button>
+    </div>`;
+  body.style.display='none';
+  window._mfInput='';
+  window._mfId=id;
+  renderMFDots();
+}
+
+let mfInput='';
+function mfPin(n){
+  if(mfInput.length>=4) return;
+  mfInput+=n;
+  renderMFDots();
+  if(mfInput.length===4) setTimeout(checkMFPin,200);
+}
+function mfPinC(){ mfInput=''; renderMFDots(); document.getElementById('mf-msg').textContent=''; document.getElementById('mf-msg').className='pin-msg'; }
+function mfPinB(){ if(mfInput.length) mfInput=mfInput.slice(0,-1); renderMFDots(); }
+function renderMFDots(){
+  const dots=document.getElementById('mf-dots');
+  if(!dots) return;
+  dots.innerHTML='';
+  for(let i=0;i<4;i++){
+    const d=document.createElement('div');
+    d.className='pin-dot'+(mfInput.length>i?' filled':'');
+    dots.appendChild(d);
+  }
+}
+function checkMFPin(){
+  const id=document.getElementById('mf-select').value;
+  const c=S.copros.find(x=>x.id===id);
+  if(!c) return;
+  const msg=document.getElementById('mf-msg');
+  if(!c.pin){
+    // No PIN set — allow access
+    openMFBody(id);
+    return;
+  }
+  if(mfInput===c.pin){
+    msg.className='pin-msg ok'; msg.textContent='✓ Accès autorisé';
+    setTimeout(()=>openMFBody(id),400);
+  } else {
+    msg.className='pin-msg err'; msg.textContent='Code incorrect';
+    const dots=document.getElementById('mf-dots');
+    dots.querySelectorAll('.pin-dot').forEach(d=>{d.classList.remove('filled');d.classList.add('error');});
+    setTimeout(()=>{mfInput='';renderMFDots();msg.textContent='';},800);
+  }
+}
+
+function openMFBody(id){
+  const c=S.copros.find(x=>x.id===id);
+  const paid=paidFor(id),du=duFor(c);
+  const pmts=S.pmts.filter(p=>p.coproId===id).sort((a,b)=>b.date.localeCompare(a.date));
+  const pmts_html = pmts.length===0
+    ? '<div class="empty" style="padding:10px 0">Aucun paiement enregistré</div>'
+    : '<div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;margin-top:4px">'
+      + '<div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:600;margin-bottom:8px">Mes paiements & reçus</div>'
+      + pmts.map(p=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+          <div>
+            <div style="font-size:12px;font-weight:500">Cotisation 2026</div>
+            <div style="font-size:10px;color:var(--sub)">${fd(p.date)} · ${p.mode}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-family:var(--serif);font-size:13px;color:var(--green)">${f(p.montant)}</span>
+            <button class="btn btn-teal btn-sm btn-recu" onclick="genRecu('${id}','${p.id}')">📄 Reçu</button>
+          </div>
+        </div>`).join('')
+      + '</div>';
+  const body=document.getElementById('mf-body');
+  body.style.display='block';
+  body.innerHTML=`
+    <div class="card">
+      <div class="card-title">Mes coordonnées</div>
+      <div class="fg"><label class="fl">Téléphone</label><input class="fi" id="mf-tel" type="tel" value="${c.tel||''}" placeholder="+216 XX XXX XXX"/></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="mf-email" type="email" value="${c.email||''}" placeholder="mon@email.com"/></div>
+      <div class="fg"><label class="fl">Appartement</label><input class="fi" id="mf-appt" value="${c.appt!=='—'?c.appt:''}" placeholder="Ex: A2, 3ème étage..."/></div>
+      <button class="btn btn-gold btn-full" onclick="saveMF('${id}')">💾 Enregistrer</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Ma situation 2026</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">Payé</div>
+          <div style="font-family:var(--serif);font-size:16px;color:var(--green);margin-top:3px">${f(paid)}</div>
+        </div>
+        <div style="background:${du>0?'rgba(248,113,113,0.1)':'rgba(74,222,128,0.1)'};border:1px solid ${du>0?'rgba(248,113,113,0.2)':'rgba(74,222,128,0.2)'};border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">${du>0?'Reste dû':'Statut'}</div>
+          <div style="font-family:var(--serif);font-size:16px;color:${du>0?'var(--red)':'var(--green)'};margin-top:3px">${du>0?f(du):'✓ À jour'}</div>
+        </div>
+      </div>
+      ${pmts_html}
+    </div>`;
+}
+
+function saveMF(id){
+  const idx=S.copros.findIndex(c=>c.id===id);
+  if(idx<0) return;
+  S.copros[idx].tel=document.getElementById('mf-tel').value.trim();
+  S.copros[idx].email=document.getElementById('mf-email').value.trim();
+  const a=document.getElementById('mf-appt').value.trim();
+  if(a) S.copros[idx].appt=a;
+  save(); showToast('✓ Coordonnées enregistrées !'); renderCP();
+}
+
+function setMFPin(id){
+  const newPin=prompt('Définir un code PIN à 4 chiffres :');
+  if(!newPin||newPin.length!==4||!/^\d{4}$/.test(newPin)){
+    showToast('PIN invalide — 4 chiffres requis'); return;
+  }
+  const idx=S.copros.findIndex(c=>c.id===id);
+  S.copros[idx].pin=newPin;
+  save(); showToast('✓ PIN défini avec succès');
+}
+
+function setPinCopro(id){
+  const newPin=prompt('Attribuer un PIN à 4 chiffres pour ce copropriétaire :');
+  if(!newPin||newPin.length!==4||!/^\d{4}$/.test(newPin)){
+    showToast('PIN invalide'); return;
+  }
+  const idx=S.copros.findIndex(c=>c.id===id);
+  S.copros[idx].pin=newPin; save(); showToast('✓ PIN attribué');
+}
+
+// ══════ REÇU ══════
+function genRecu(coproId,pmtId){
+  const c=S.copros.find(x=>x.id===coproId);
+  const p=S.pmts.find(x=>x.id===pmtId);
+  if(!c||!p) return;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<meta name="theme-color" content="#2347c8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Syndic Pro">
+  <title>Reçu — ${c.nom}</title>
+  <style>
+    body{font-family:Arial,sans-serif;max-width:500px;margin:40px auto;padding:20px;color:#111;}
+    .header{background:#1a3a8f;color:white;padding:20px;text-align:center;border-radius:8px;margin-bottom:20px;}
+    .header h2{margin:0 0 4px;font-size:18px;}
+    .header p{margin:0;font-size:11px;opacity:0.8;}
+    .body{border:1px solid #ddd;border-radius:8px;padding:20px;margin-bottom:16px;}
+    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;}
+    .row:last-child{border-bottom:none;}
+    .label{color:#666;font-size:12px;}
+    .val{font-weight:600;font-size:12px;}
+    .total{background:#f0f7f0;border-radius:8px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .total span:first-child{font-size:13px;font-weight:600;}
+    .total span:last-child{font-size:22px;font-weight:700;color:#1a7a3a;}
+    .footer{text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:12px;}
+    .stamp{background:#e8f5e9;border:2px solid #4caf50;border-radius:8px;padding:10px;text-align:center;margin-bottom:16px;}
+    .stamp strong{color:#2e7d32;font-size:13px;}
+    @media print{button{display:none!important;}}
+  </style></head><body>
+  <div class="header">
+    <h2>Syndicat des Copropriétaires</h2>
+    <p>27 Rue Omar Zayane — Hammamet · Exercice 2025/2026</p>
+  </div>
+  <h3 style="text-align:center;margin-bottom:16px;font-size:15px;color:#444">REÇU DE PAIEMENT DE COTISATION</h3>
+  <div class="stamp"><strong>✓ PAIEMENT REÇU</strong></div>
+  <div class="body">
+    <div class="row"><span class="label">Copropriétaire</span><span class="val">${c.nom}</span></div>
+    ${c.appt&&c.appt!=='—'?'<div class="row"><span class="label">Appartement</span><span class="val">'+c.appt+'</span></div>':''}
+    <div class="row"><span class="label">Date de paiement</span><span class="val">${fd(p.date)}</span></div>
+    <div class="row"><span class="label">Mode de paiement</span><span class="val">${p.mode}</span></div>
+    <div class="row"><span class="label">Objet</span><span class="val">Cotisation annuelle 2026</span></div>
+    ${p.note?'<div class="row"><span class="label">Note</span><span class="val">'+p.note+'</span></div>':''}
+  </div>
+  <div class="total"><span>Montant réglé</span><span>${f(p.montant)}</span></div>
+  <div class="footer">
+    Document généré le ${new Date().toLocaleDateString('fr-FR')} · Syndicat des Copropriétaires 2025/2026<br>
+    Ce reçu atteste du paiement de la cotisation ci-dessus.
+  </div>
+  <button onclick="window.print()" style="width:100%;padding:12px;background:#1a3a8f;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-top:12px">🖨 Imprimer ce reçu</button>
+  </body></html>`);
+  w.document.close();
+}
+
+// ══════ MODALES ══════
+function openM(id){
+  if(id==='m-pmt'){
+    document.getElementById('fp-c').innerHTML=S.copros.map(c=>'<option value="'+c.id+'">'+c.nom+'</option>').join('');
+    document.getElementById('fp-d').value=new Date().toISOString().slice(0,10);
+  }
+  if(id==='m-chg'){
+    document.getElementById('fch-d').value=new Date().toISOString().slice(0,10);
+    document.getElementById('fch-id').value='';
+    document.getElementById('m-chg-title').textContent='Nouvelle dépense';
+    capturedPhotos=[];
+    setTimeout(renderPhotosGrid,30);
+  }
+  if(id==='m-prest'){
+    document.getElementById('fp2-id').value='';
+    document.getElementById('m-prest-title').textContent='Nouveau prestataire';
+    prestPhotos=[];
+    setTimeout(renderPrestPhotos,30);
+  }
+  if(id==='m-devis'){
+    document.getElementById('fd-id').value='';
+    document.getElementById('m-devis-title').textContent='Nouveau devis';
+    document.getElementById('fd-date').value=new Date().toISOString().slice(0,10);
+    devisPhotos=[]; devisDocData=null; devisDocName=null;
+    setTimeout(()=>{ renderDevisPhotos(); clearDevisDoc(); },30);
+  }
+  document.querySelectorAll('.overlay.on').forEach(o=>o.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+function closeM(id){ document.getElementById(id).classList.remove('on'); }
+document.addEventListener('click',e=>{ if(e.target.classList.contains('overlay')) e.target.classList.remove('on'); });
+
+// ══════ SAVES ══════
+function saveCopro(){
+  const nom=document.getElementById('fc-nom').value.trim();
+  if(!nom) return alert('Nom requis');
+  const q=parseFloat(document.getElementById('fc-q').value)||150;
+  const s=parseFloat(document.getElementById('fc-s').value)||0;
+  S.copros.push({id:uid(),nom,appt:document.getElementById('fc-a').value.trim()||'—',
+    quote:q+s,solde2025:s,tel:document.getElementById('fc-t').value.trim(),
+    email:document.getElementById('fc-e').value.trim(),pin:''});
+  save(); closeM('m-copro');
+  ['fc-nom','fc-q','fc-s','fc-a','fc-t','fc-e'].forEach(i=>document.getElementById(i).value='');
+  renderCP(); renderDB();
+}
+
+function savePmt(){
+  const coproId=document.getElementById('fp-c').value;
+  const montant=parseFloat(document.getElementById('fp-m').value);
+  const date=document.getElementById('fp-d').value;
+  if(!montant||!date) return alert('Remplir tous les champs');
+  S.pmts.push({id:uid(),coproId,montant,date,mode:document.getElementById('fp-mode').value,note:document.getElementById('fp-n').value});
+  save(); closeM('m-pmt');
+  document.getElementById('fp-m').value='';
+  document.getElementById('fp-n').value='';
+  renderCP(); renderDB();
+}
+
+async function saveChg(){
+  const motif=document.getElementById('fch-m').value.trim();
+  const montant=parseFloat(document.getElementById('fch-o').value);
+  const date=document.getElementById('fch-d').value;
+  if(!motif||!montant||!date) return alert('Remplir : Motif, Montant et Date');
+  const cat=document.getElementById('fch-c').value;
+  const tiers=document.getElementById('fch-t').value.trim();
+  const editId=document.getElementById('fch-id').value;
+  const compressed=await Promise.all(capturedPhotos.map(compressPhoto));
+  if(editId){
+    const idx=S.chgs.findIndex(c=>c.id===editId);
+    if(idx>-1) S.chgs[idx]={...S.chgs[idx],motif,montant,date,cat,tiers,photos:compressed};
+  } else {
+    S.chgs.push({id:uid(),motif,montant,date,cat,tiers,photos:compressed});
+  }
+  save(); closeM('m-chg');
+  ['fch-m','fch-o','fch-t'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('fch-id').value='';
+  capturedPhotos=[]; renderPhotosGrid();
+  renderCH(); renderDB();
+}
+
+function editCopro(id){
+  const c=S.copros.find(x=>x.id===id);
+  if(!c) return;
+  closeSP('sp-copro');
+  openM('m-copro');
+  setTimeout(()=>{
+    document.getElementById('fc-nom').value=c.nom;
+    document.getElementById('fc-q').value=c.solde2025>0?c.quote-c.solde2025:c.quote;
+    document.getElementById('fc-s').value=c.solde2025||0;
+    document.getElementById('fc-a').value=c.appt!=='—'?c.appt:'';
+    document.getElementById('fc-t').value=c.tel||'';
+    document.getElementById('fc-e').value=c.email||'';
+    // Mark as edit
+    document.querySelector('#m-copro .btn-gold').onclick=()=>updateCopro(id);
+  },50);
+}
+
+function updateCopro(id){
+  const idx=S.copros.findIndex(c=>c.id===id);
+  if(idx<0) return;
+  const q=parseFloat(document.getElementById('fc-q').value)||150;
+  const s=parseFloat(document.getElementById('fc-s').value)||0;
+  S.copros[idx]={...S.copros[idx],
+    nom:document.getElementById('fc-nom').value.trim(),
+    quote:q+s,solde2025:s,
+    appt:document.getElementById('fc-a').value.trim()||'—',
+    tel:document.getElementById('fc-t').value.trim(),
+    email:document.getElementById('fc-e').value.trim()};
+  save(); closeM('m-copro');
+  document.querySelector('#m-copro .btn-gold').onclick=saveCopro;
+  renderCP(); renderDB();
+}
+
+function editChg(id){
+  const c=S.chgs.find(x=>x.id===id);
+  if(!c) return;
+  openM('m-chg');
+  setTimeout(()=>{
+    document.getElementById('fch-id').value=c.id;
+    document.getElementById('fch-m').value=c.motif;
+    document.getElementById('fch-o').value=c.montant;
+    document.getElementById('fch-d').value=c.date;
+    document.getElementById('fch-c').value=c.cat;
+    document.getElementById('fch-t').value=c.tiers||'';
+    document.getElementById('m-chg-title').textContent='Modifier la dépense';
+    capturedPhotos=c.photos?[...c.photos]:(c.photo?[c.photo]:[]);
+    renderPhotosGrid();
+  },50);
+}
+
+function quickPmt(id){
+  closeSP('sp-copro');
+  openM('m-pmt');
+  setTimeout(()=>document.getElementById('fp-c').value=id,60);
+}
+
+function delCopro(id){
+  if(!confirm('Supprimer ce copropriétaire et ses paiements ?')) return;
+  S.copros=S.copros.filter(c=>c.id!==id);
+  S.pmts=S.pmts.filter(p=>p.coproId!==id);
+  save(); closeSP('sp-copro'); renderCP(); renderDB();
+}
+
+// ══════ PHOTOS ══════
+function addPhoto(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=ev=>{capturedPhotos.push(ev.target.result);renderPhotosGrid();};
+  r.readAsDataURL(file);
+  e.target.value='';
+}
+
+function handleCam(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    capturedPhotos.push(ev.target.result);
+    if(!document.getElementById('m-chg').classList.contains('on')) openM('m-chg');
+    renderPhotosGrid();
+  };
+  r.readAsDataURL(file);
+  e.target.value='';
+}
+
+function renderPhotosGrid(){
+  const g=document.getElementById('fch-photos');
+  if(!g) return;
+  g.innerHTML=capturedPhotos.map((src,i)=>`
+    <div class="photo-thumb">
+      <img src="${src}"/>
+      <button class="photo-del" onclick="capturedPhotos.splice(${i},1);renderPhotosGrid()">✕</button>
+    </div>`).join('');
+}
+
+function compressPhoto(src){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=()=>{
+      const maxW=400,scale=img.width>maxW?maxW/img.width:1;
+      const cv=document.createElement('canvas');
+      cv.width=Math.round(img.width*scale);cv.height=Math.round(img.height*scale);
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      res(cv.toDataURL('image/jpeg',0.5));
+    };
+    img.onerror=()=>res(src);img.src=src;
+  });
+}
+
+// ══════ PIN PAD (générique) ══════
+let pinInputs={};
+function pinKey(ns,n){
+  if(!pinInputs[ns]) pinInputs[ns]='';
+  if(pinInputs[ns].length>=4) return;
+  pinInputs[ns]+=n;
+  updatePinDots(ns);
+  if(pinInputs[ns].length===4) setTimeout(()=>checkSyndicPin(ns),200);
+}
+function pinClear(ns){ pinInputs[ns]=''; updatePinDots(ns); }
+function pinBack(ns){ if(pinInputs[ns]&&pinInputs[ns].length) pinInputs[ns]=pinInputs[ns].slice(0,-1); updatePinDots(ns); }
+function updatePinDots(ns){
+  const el=document.getElementById(ns+'-dots');
+  if(!el) return;
+  el.innerHTML='';
+  for(let i=0;i<4;i++){
+    const d=document.createElement('div');
+    d.className='pin-dot'+(pinInputs[ns]&&pinInputs[ns].length>i?' filled':'');
+    el.appendChild(d);
+  }
+}
+function checkSyndicPin(ns){
+  const msg=document.getElementById(ns+'-msg');
+  if(pinInputs[ns]===S.syndicPin){
+    if(msg){msg.className='pin-msg ok';msg.textContent='✓ Accès autorisé';}
+    setTimeout(()=>{closeM('m-pin-syndic');if(pendingAction){pendingAction();pendingAction=null;}},400);
+  } else {
+    if(msg){msg.className='pin-msg err';msg.textContent='Code PIN incorrect';}
+    const dots=document.getElementById(ns+'-dots');
+    if(dots) dots.querySelectorAll('.pin-dot').forEach(d=>{d.classList.remove('filled');d.classList.add('error');});
+    setTimeout(()=>{pinInputs[ns]='';updatePinDots(ns);if(msg){msg.textContent='';msg.className='pin-msg';}},800);
+  }
+}
+
+// ══════ PRINT & SHARE ══════
+function printRapport(){ renderRP(); setTimeout(()=>window.print(),100); }
+
+async function shareRapport(){
+  const enc=S.pmts.reduce((s,p)=>s+Number(p.montant),0);
+  const dep=S.chgs.reduce((s,c)=>s+Number(c.montant),0);
+  const solde=enc-dep;
+  const imp=S.copros.filter(c=>duFor(c)>0);
+  const totalImp=imp.reduce((s,c)=>s+duFor(c),0);
+  const nl="\n";
+  const txt="RAPPORT SYNDIC - 27 Rue Omar Zayane, Hammamet"+nl
+    +"================================"+nl
+    +"Encaisse : "+f(enc)+nl
+    +"Depenses : "+f(dep)+nl
+    +"Solde    : "+f(solde)+nl
+    +"Impayes  : "+f(totalImp)+" ("+imp.length+" copropri.)"+nl
+    +"--------------------------------"+nl
+    +(imp.length>0?"Debiteurs:"+nl+imp.map(c=>"  - "+c.nom+" : "+f(duFor(c))).join(nl):"Aucun impaye")+nl
+    +"================================"+nl
+    +"Exercice 2025/2026";
+  if(navigator.share){
+    try{await navigator.share({title:'Rapport Syndic',text:txt});}
+    catch(e){if(e.name!=='AbortError') fallbackShare(txt);}
+  } else { fallbackShare(txt); }
+}
+
+function fallbackShare(txt){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(()=>showToast('Rapport copié dans le presse-papier'));
+  } else {
+    const ta=document.createElement('textarea');ta.value=txt;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);showToast('Rapport copié');
+  }
+}
+
+// ══════ CHANGE SYNDIC PIN ══════
+function changeSyndicPin(){
+  const current = prompt('Entrez le PIN actuel :');
+  if(current === null) return;
+  if(current !== S.syndicPin){
+    showToast('❌ PIN actuel incorrect'); return;
+  }
+  const newPin = prompt('Nouveau PIN (4 chiffres) :');
+  if(!newPin || !/^\d{4}$/.test(newPin)){
+    showToast('❌ PIN invalide — 4 chiffres requis'); return;
+  }
+  const confirm = prompt('Confirmez le nouveau PIN :');
+  if(newPin !== confirm){
+    showToast('❌ Les deux PIN ne correspondent pas'); return;
+  }
+  S.syndicPin = newPin;
+  save();
+  showToast('✓ PIN Syndic modifié avec succès');
+}
+
+// ══════ RESET ══════
+function resetAll(){
+  if(!confirm('Réinitialiser toutes les données ?')) return;
+  localStorage.removeItem(SK); location.reload();
+}
+
+// ══════ TOAST ══════
+function showToast(msg){
+  const t=document.createElement('div');
+  t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2500);
+}
+
+// ══════ LOGIN ══════
+let appMode = null; // 'syndic' or 'consult'
+let lsInput = '';
+
+function lsPin(n){
+  if(lsInput.length>=4) return;
+  lsInput+=n; updateLsDots();
+  if(lsInput.length===4) setTimeout(checkLsPin,200);
+}
+function lsPinC(){ lsInput=''; updateLsDots(); document.getElementById('ls-msg').textContent=''; }
+function lsPinB(){ if(lsInput.length) lsInput=lsInput.slice(0,-1); updateLsDots(); }
+function updateLsDots(){
+  const el=document.getElementById('ls-dots'); if(!el) return;
+  el.innerHTML='';
+  for(let i=0;i<4;i++){
+    const d=document.createElement('div');
+    d.className='pin-dot'+(lsInput.length>i?' filled':'');
+    el.appendChild(d);
+  }
+}
+function checkLsPin(){
+  const msg=document.getElementById('ls-msg');
+  if(lsInput===S.syndicPin){
+    msg.className='pin-msg ok'; msg.textContent='✓ Accès autorisé';
+    setTimeout(()=>enterSyndic(),400);
+  } else {
+    msg.className='pin-msg err'; msg.textContent='Code PIN incorrect';
+    const dots=document.getElementById('ls-dots');
+    dots.querySelectorAll('.pin-dot').forEach(d=>{d.classList.remove('filled');d.classList.add('error');});
+    setTimeout(()=>{lsInput='';updateLsDots();msg.textContent='';msg.className='pin-msg';},800);
+  }
+}
+
+function enterSyndic(){
+  appMode='syndic';
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('ro-banner').classList.add('hidden');
+  setReadOnly(false);
+  if(!S.messages) S.messages=[];
+  updateMsgBadge();
+}
+
+function enterConsult(){
+  appMode='consult';
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('ro-banner').classList.remove('hidden');
+  setReadOnly(true);
+  // Force accueil
+  document.querySelectorAll('.bnt').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.subpage').forEach(s=>s.classList.remove('on'));
+  document.getElementById('page-db').classList.add('on');
+  document.querySelector('.bnt:first-child').classList.add('on');
+  renderDB();
+}
+
+function logout(){
+  appMode=null; lsInput='';
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('ro-banner').classList.add('hidden');
+  updateLsDots();
+  document.getElementById('ls-msg').textContent='';
+}
+
+function setReadOnly(ro){
+  document.body.classList.toggle('readonly', ro);
+}
+
+// ══════ PRESTATAIRES ══════
+let prestFilter = 'all';
+let prestPhotos = [];
+let devisPhotos = [];
+let devisDocData = null;
+let devisDocName = null;
+
+function filterPrest(el, filter){
+  document.querySelectorAll('#prest-chips .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  prestFilter = filter;
+  renderPrest();
+}
+
+function renderPrest(){
+  if(!S.prestataires) S.prestataires=[];
+  if(!S.devis) S.devis=[];
+
+  // Show/hide toolbar in consult mode
+  const tb = document.getElementById('prest-toolbar');
+  if(tb) tb.style.display = appMode==='syndic'?'flex':'none';
+
+  const el = document.getElementById('prest-list');
+  let items = [];
+
+  if(prestFilter==='all'||prestFilter==='prestataire'){
+    items = items.concat(S.prestataires.map(p=>({...p, _type:'prestataire'})));
+  }
+  if(prestFilter==='all'||prestFilter==='devis'){
+    items = items.concat(S.devis.map(d=>({...d, _type:'devis'})));
+  }
+  if(prestFilter==='all'||prestFilter==='recommandation'){
+    items = items.concat(S.prestataires.filter(p=>p.note>=4).map(p=>({...p, _type:'recommandation'})));
+  }
+
+  if(!items.length){
+    el.innerHTML='<div class="empty">Aucun élément.</div>';
+    return;
+  }
+
+  const statutColors = {
+    en_attente:'rgba(240,192,64,0.15)',accepte:'rgba(74,222,128,0.15)',
+    refuse:'rgba(248,113,113,0.15)',en_cours:'rgba(45,212,191,0.15)',termine:'rgba(148,163,184,0.15)'
+  };
+  const statutText = {
+    en_attente:'⏳ En attente',accepte:'✅ Accepté',refuse:'❌ Refusé',
+    en_cours:'🔨 En cours',termine:'✓ Terminé'
+  };
+  const stars = n=>'⭐'.repeat(n);
+
+  el.innerHTML = items.map(item=>{
+    if(item._type==='prestataire'||item._type==='recommandation'){
+      return `<div class="card" style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div style="font-size:14px;font-weight:600">${item.nom}</div>
+            <div style="font-size:11px;color:var(--sub);margin-top:2px">${item.spec}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px">${stars(item.note||0)}</div>
+            ${item._type==='recommandation'?'<div style="font-size:9px;color:var(--accent);font-weight:700;margin-top:2px;background:rgba(240,192,64,0.15);padding:2px 6px;border-radius:4px">⭐ RECOMMANDÉ</div>':''}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;margin-bottom:8px">
+          ${item.tel?`<div style="font-size:12px;color:var(--sub)">☎ <strong style="color:var(--text)">${item.tel}</strong></div>`:''}
+          ${item.email?`<div style="font-size:12px;color:var(--sub)">✉ <strong style="color:var(--text)">${item.email}</strong></div>`:''}
+          ${item.adresse?`<div style="font-size:12px;color:var(--sub)">📍 ${item.adresse}</div>`:''}
+        </div>
+        ${item.comment?`<div style="font-size:11px;color:rgba(255,255,255,0.65);font-style:italic;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;margin-bottom:8px">"${item.comment}"</div>`:''}
+        ${item.photos&&item.photos.length?`<div class="photos-grid" style="margin-bottom:8px">${item.photos.map((src,i)=>`<div class="photo-thumb" onclick="viewPrestPhoto('${item.id}',${i})"><img src="${src}"/></div>`).join('')}</div>`:''}
+        ${appMode==='syndic'?`<div style="display:flex;gap:8px;margin-top:6px">
+          <button class="btn btn-teal btn-sm" onclick="editPrest('${item.id}')">✎ Modifier</button>
+          <button class="btn btn-red btn-sm" onclick="delPrest('${item.id}')">✕</button>
+        </div>`:''}
+      </div>`;
+    } else {
+      // Devis
+      const bg = statutColors[item.statut]||'rgba(255,255,255,0.05)';
+      return `<div class="card" style="margin-bottom:8px;border-left:3px solid rgba(45,212,191,0.5)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div style="font-size:13px;font-weight:600">${item.objet}</div>
+            <div style="font-size:11px;color:var(--sub);margin-top:2px">${item.prest}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--serif);font-size:15px;color:var(--accent)">${f(item.montant)}</div>
+            <div style="font-size:10px;color:var(--muted)">${fd(item.date)}</div>
+          </div>
+        </div>
+        <div style="display:inline-block;background:${bg};padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;margin-bottom:8px">${statutText[item.statut]||item.statut}</div>
+        ${item.notes?`<div style="font-size:11px;color:var(--sub);margin-bottom:8px">${item.notes}</div>`:''}
+        ${item.photos&&item.photos.length?`<div class="photos-grid" style="margin-bottom:8px">${item.photos.map((src,i)=>`<div class="photo-thumb" onclick="viewDevisPhoto('${item.id}',${i})"><img src="${src}"/></div>`).join('')}</div>`:''}
+        ${item.docName?`<div style="background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="downloadDoc('${item.id}')">
+          <span style="font-size:11px;color:var(--sub)">📎 ${item.docName}</span>
+          <span style="font-size:10px;color:var(--teal);font-weight:600">Télécharger</span>
+        </div>`:''}
+        ${appMode==='syndic'?`<div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn btn-teal btn-sm" onclick="editDevis('${item.id}')">✎ Modifier</button>
+          <button class="btn btn-red btn-sm" onclick="delDevis('${item.id}')">✕</button>
+        </div>`:''}
+      </div>`;
+    }
+  }).join('');
+}
+
+function addPrestPhoto(e){
+  const files = Array.from(e.target.files);
+  files.forEach(file=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      compressPhoto(ev.target.result).then(c=>{
+        prestPhotos.push(c); renderPrestPhotos();
+      });
+    };
+    r.readAsDataURL(file);
+  });
+  e.target.value='';
+}
+
+function renderPrestPhotos(){
+  const g=document.getElementById('fp2-photos');
+  if(!g) return;
+  g.innerHTML=prestPhotos.map((src,i)=>`
+    <div class="photo-thumb">
+      <img src="${src}"/>
+      <button class="photo-del" onclick="prestPhotos.splice(${i},1);renderPrestPhotos()">✕</button>
+    </div>`).join('');
+}
+
+function addDevisPhoto(e){
+  const files = Array.from(e.target.files);
+  files.forEach(file=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      compressPhoto(ev.target.result).then(c=>{
+        devisPhotos.push(c); renderDevisPhotos();
+      });
+    };
+    r.readAsDataURL(file);
+  });
+  e.target.value='';
+}
+
+function renderDevisPhotos(){
+  const g=document.getElementById('fd-photos');
+  if(!g) return;
+  g.innerHTML=devisPhotos.map((src,i)=>`
+    <div class="photo-thumb">
+      <img src="${src}"/>
+      <button class="photo-del" onclick="devisPhotos.splice(${i},1);renderDevisPhotos()">✕</button>
+    </div>`).join('');
+}
+
+function handleDevisDoc(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    devisDocData=ev.target.result;
+    devisDocName=file.name;
+    const prev=document.getElementById('fd-doc-preview');
+    const nm=document.getElementById('fd-doc-name');
+    if(prev) prev.style.display='flex';
+    if(nm) nm.textContent='📎 '+file.name;
+  };
+  r.readAsDataURL(file);
+  e.target.value='';
+}
+
+function clearDevisDoc(){
+  devisDocData=null; devisDocName=null;
+  const prev=document.getElementById('fd-doc-preview');
+  if(prev) prev.style.display='none';
+}
+
+async function savePrest(){
+  if(!S.prestataires) S.prestataires=[];
+  const nom=document.getElementById('fp2-nom').value.trim();
+  if(!nom) return alert('Nom requis');
+  const editId=document.getElementById('fp2-id').value;
+  const entry={
+    id:editId||uid(), nom,
+    spec:document.getElementById('fp2-spec').value,
+    note:parseInt(document.getElementById('fp2-note').value),
+    tel:document.getElementById('fp2-tel').value.trim(),
+    email:document.getElementById('fp2-email').value.trim(),
+    adresse:document.getElementById('fp2-adresse').value.trim(),
+    comment:document.getElementById('fp2-comment').value.trim(),
+    photos:[...prestPhotos]
+  };
+  if(editId){
+    const idx=S.prestataires.findIndex(x=>x.id===editId);
+    if(idx>-1) S.prestataires[idx]=entry;
+  } else {
+    S.prestataires.push(entry);
+  }
+  save(); closeM('m-prest');
+  ['fp2-nom','fp2-tel','fp2-email','fp2-adresse','fp2-comment'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('fp2-id').value='';
+  prestPhotos=[]; renderPrestPhotos();
+  document.querySelector('#m-prest .btn-gold').onclick=savePrest;
+  renderPrest();
+}
+
+function editPrest(id){
+  const p=S.prestataires.find(x=>x.id===id);
+  if(!p) return;
+  openM('m-prest');
+  setTimeout(()=>{
+    document.getElementById('fp2-id').value=p.id;
+    document.getElementById('fp2-nom').value=p.nom;
+    document.getElementById('fp2-spec').value=p.spec;
+    document.getElementById('fp2-note').value=p.note;
+    document.getElementById('fp2-tel').value=p.tel||'';
+    document.getElementById('fp2-email').value=p.email||'';
+    document.getElementById('fp2-adresse').value=p.adresse||'';
+    document.getElementById('fp2-comment').value=p.comment||'';
+    document.getElementById('m-prest-title').textContent='Modifier le prestataire';
+    prestPhotos=p.photos?[...p.photos]:[];
+    renderPrestPhotos();
+  },50);
+}
+
+function viewChgPhotoRO(chgId,idx){
+  const c=S.chgs.find(x=>x.id===chgId);
+  if(!c||!c.photos||!c.photos[idx]) return;
+  const w=window.open();
+  w.document.write('<img src="'+c.photos[idx]+'" style="max-width:100%;height:auto">');
+}
+
+function viewPrestPhoto(id,idx){
+  const p=S.prestataires.find(x=>x.id===id);
+  if(!p||!p.photos[idx]) return;
+  const w=window.open(); w.document.write('<img src="'+p.photos[idx]+'" style="max-width:100%;height:auto">');
+}
+
+function viewDevisPhoto(id,idx){
+  const d=S.devis.find(x=>x.id===id);
+  if(!d||!d.photos[idx]) return;
+  const w=window.open(); w.document.write('<img src="'+d.photos[idx]+'" style="max-width:100%;height:auto">');
+}
+
+function downloadDoc(id){
+  const d=S.devis.find(x=>x.id===id);
+  if(!d||!d.docData) return;
+  const a=document.createElement('a');
+  a.href=d.docData; a.download=d.docName||'document';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function delPrest(id){
+  if(!confirm('Supprimer ce prestataire ?')) return;
+  S.prestataires=S.prestataires.filter(x=>x.id!==id);
+  save(); renderPrest();
+}
+
+function saveDevis(){
+  if(!S.devis) S.devis=[];
+  const objet=document.getElementById('fd-objet').value.trim();
+  const montant=parseFloat(document.getElementById('fd-montant').value);
+  const date=document.getElementById('fd-date').value;
+  if(!objet||!montant||!date) return alert('Remplir Objet, Montant et Date');
+  const editId=document.getElementById('fd-id').value;
+  const entry={
+    id:editId||uid(),
+    prest:document.getElementById('fd-prest').value.trim(),
+    objet, montant, date,
+    statut:document.getElementById('fd-statut').value,
+    notes:document.getElementById('fd-notes').value.trim(),
+    photos:[...devisPhotos],
+    docData:devisDocData,
+    docName:devisDocName
+  };
+  if(editId){
+    const idx=S.devis.findIndex(x=>x.id===editId);
+    if(idx>-1) S.devis[idx]=entry;
+  } else {
+    S.devis.push(entry);
+  }
+  save(); closeM('m-devis');
+  ['fd-prest','fd-objet','fd-montant','fd-notes'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('fd-id').value='';
+  devisPhotos=[]; renderDevisPhotos();
+  clearDevisDoc();
+  renderPrest();
+}
+
+function editDevis(id){
+  const d=S.devis.find(x=>x.id===id);
+  if(!d) return;
+  openM('m-devis');
+  setTimeout(()=>{
+    document.getElementById('fd-id').value=d.id;
+    document.getElementById('fd-prest').value=d.prest||'';
+    document.getElementById('fd-objet').value=d.objet;
+    document.getElementById('fd-montant').value=d.montant;
+    document.getElementById('fd-date').value=d.date;
+    document.getElementById('fd-statut').value=d.statut;
+    document.getElementById('fd-notes').value=d.notes||'';
+    document.getElementById('m-devis-title').textContent='Modifier le devis';
+    devisPhotos=d.photos?[...d.photos]:[];
+    renderDevisPhotos();
+    if(d.docName){
+      devisDocData=d.docData; devisDocName=d.docName;
+      const prev=document.getElementById('fd-doc-preview');
+      const nm=document.getElementById('fd-doc-name');
+      if(prev) prev.style.display='flex';
+      if(nm) nm.textContent='📎 '+d.docName;
+    }
+  },50);
+}
+
+function delDevis(id){
+  if(!confirm('Supprimer ce devis ?')) return;
+  S.devis=S.devis.filter(x=>x.id!==id);
+  save(); renderPrest();
+}
+
+// ══════ MESSAGES ══════
+function renderMsg(){
+  // Populate sender select
+  const sel = document.getElementById('msg-from');
+  if(sel) {
+    sel.innerHTML = '<option value="">— Sélectionner —</option>' +
+      S.copros.map(c=>`<option value="${c.id}">${c.nom}</option>`).join('');
+  }
+
+  if(appMode==='syndic'){
+    // Show inbox
+    document.getElementById('msg-compose').style.display='none';
+    document.getElementById('msg-inbox').style.display='block';
+    renderInbox();
+  } else {
+    // Show compose
+    document.getElementById('msg-compose').style.display='block';
+    document.getElementById('msg-inbox').style.display='none';
+  }
+  updateMsgBadge();
+}
+
+function renderInbox(){
+  const el = document.getElementById('msg-list');
+  if(!S.messages||!S.messages.length){
+    el.innerHTML='<div class="empty">Aucun message reçu.</div>';
+    return;
+  }
+  const sorted = [...S.messages].sort((a,b)=>b.ts-a.ts);
+  el.innerHTML = sorted.map(m=>{
+    const c = S.copros.find(x=>x.id===m.from);
+    const name = c ? c.nom : m.fromName||'Inconnu';
+    const date = new Date(m.ts).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    return `<div class="card" style="margin-bottom:8px;${!m.read?'border-left:3px solid var(--accent)':''}" onclick="readMsg('${m.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${name}</div>
+          <div style="font-size:10px;color:var(--muted)">${date}</div>
+        </div>
+        ${!m.read?'<span style="background:var(--accent);color:var(--navy);font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px">Nouveau</span>':''}
+      </div>
+      <div style="font-size:11px;font-weight:600;color:var(--sub);margin-bottom:4px">${m.subject}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.5">${m.body.length>100?m.body.slice(0,100)+'…':m.body}</div>
+      ${m.read?'':'<div style="font-size:10px;color:var(--muted);margin-top:6px">Appuyer pour marquer comme lu</div>'}
+    </div>`;
+  }).join('');
+}
+
+function readMsg(id){
+  const idx = S.messages.findIndex(m=>m.id===id);
+  if(idx<0) return;
+  if(!S.messages[idx].read){
+    S.messages[idx].read=true;
+    save(); renderInbox(); updateMsgBadge();
+  } else {
+    // Show full message
+    const m = S.messages[idx];
+    const c = S.copros.find(x=>x.id===m.from);
+    const name = c?c.nom:m.fromName||'Inconnu';
+    const date = new Date(m.ts).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const w = window.open('','_blank','width=400,height=500');
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<meta name="theme-color" content="#2347c8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Syndic Pro"><title>Message</title>
+    <style>body{font-family:Arial,sans-serif;padding:20px;max-width:480px;margin:0 auto;background:#f5f5f5;}
+    .card{background:white;border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+    h3{color:#1a3a8f;margin:0 0 4px;}p{color:#555;font-size:12px;margin:0 0 16px;}
+    .body{font-size:14px;line-height:1.6;color:#222;white-space:pre-wrap;}
+    .meta{font-size:11px;color:#888;border-top:1px solid #eee;padding-top:10px;margin-top:10px;}
+    button{background:#1a3a8f;color:white;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;width:100%;margin-top:10px;}
+    </style></head><body>
+    <div class="card">
+      <h3>${name}</h3><p>${date}</p>
+      <div style="background:#f0f4ff;border-radius:6px;padding:8px 12px;font-size:11px;font-weight:600;color:#1a3a8f;margin-bottom:12px">${m.subject}</div>
+      <div class="body">${m.body}</div>
+    </div>
+    <button onclick="window.close()">Fermer</button>
+    </body></html>`);
+  }
+}
+
+function sendMsg(){
+  const fromId = document.getElementById('msg-from').value;
+  const subject = document.getElementById('msg-subject').value;
+  const body = document.getElementById('msg-body').value.trim();
+  if(!fromId) return showToast('Sélectionnez votre nom');
+  if(!body) return showToast('Écrivez un message');
+  if(!S.messages) S.messages=[];
+  const c = S.copros.find(x=>x.id===fromId);
+  S.messages.push({
+    id:uid(), from:fromId, fromName:c?c.nom:'', subject, body,
+    ts:Date.now(), read:false
+  });
+  save();
+  document.getElementById('msg-body').value='';
+  document.getElementById('msg-from').value='';
+  showToast('✓ Message envoyé au syndic !');
+  updateMsgBadge();
+}
+
+function updateMsgBadge(){
+  if(!S.messages) S.messages=[];
+  const unread = S.messages.filter(m=>!m.read).length;
+  const badge = document.getElementById('msg-unread-badge');
+  const bnt = document.getElementById('bnt-msg');
+  // Show dot on nav icon if unread & syndic mode
+  const dot = bnt ? bnt.querySelector('.bi') : null;
+  if(unread>0 && appMode==='syndic'){
+    if(badge){ badge.style.display='inline-block'; badge.textContent=unread+' nouveau'+(unread>1?'x':''); }
+    if(dot) dot.textContent='💬';
+  } else {
+    if(badge) badge.style.display='none';
+  }
+}
+
+// ══════ INIT ══════
+load();
+renderDB();
+// Show login on start
+updateLsDots();
+</script>
+</body>
+</html>
